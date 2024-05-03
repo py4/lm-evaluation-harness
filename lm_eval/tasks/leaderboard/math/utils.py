@@ -16,8 +16,7 @@ except ModuleNotFoundError:
 please install sympy via pip install lm-eval[math] or pip install -e .[math]",
     )
 
-# taken from
-# https://github.com/wellecks/lm-evaluation-harness/blob/master/lm_eval/tasks/minerva_math.py
+# Few shot samples taken from https://github.com/wellecks/lm-evaluation-harness/blob/master/lm_eval/tasks/minerva_math.py
 # We remove the "I hope this ... from the examples"
 FEWSHOT_EXAMPLES = r"""Problem:
 Find the domain of the expression  $\frac{\sqrt{x-2}}{\sqrt{5-x}}$.}
@@ -92,32 +91,48 @@ def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
     }
     return results
 
-def last_boxed_only_string(text: str) -> str | None:
-    """Extract the last \\boxed{...} from the example string. Should never return None."""
-    if "\\boxed " in text:
-        return "\\boxed{" + text.split("\\boxed ")[-1].split("$")[0] + "}"
-    if "\\boxed" in text:
-        return "\\boxed" + text.split("\\boxed")[-1].split("$")[0]
-    return None
+def last_boxed_only_string(string: str) -> Optional[str]:
+    idx = string.rfind("\\boxed")
+    if "\\boxed " in string:
+        return "\\boxed " + string.split("\\boxed ")[-1].split("$")[0]
+    if idx < 0:
+        idx = string.rfind("\\fbox")
+        if idx < 0:
+            return None
+
+    i = idx
+    right_brace_idx = None
+    num_left_braces_open = 0
+    while i < len(string):
+        if string[i] == "{":
+            num_left_braces_open += 1
+        if string[i] == "}":
+            num_left_braces_open -= 1
+            if num_left_braces_open == 0:
+                right_brace_idx = i
+                break
+        i += 1
+
+    if right_brace_idx is None:
+        retval = None
+    else:
+        retval = string[idx : right_brace_idx + 1]
+
+    return retval
 
 
-def remove_boxed(text: str | None) -> str:
-    """
-    Extract the text within a \\boxed{...} environment.
-    Example:
-    >>> _remove_boxed(\\boxed{\\frac{2}{3}})
-    \\frac{2}{3}
-    """
-    if text is None:
-        return ""
+def remove_boxed(s: str) -> str:
+    if "\\boxed " in s:
+        left = "\\boxed "
+        assert s[: len(left)] == left
+        return s[len(left) :]
 
-    if "\\boxed{" in text and text[-1] == "}":
-        text = text.replace("}", "")
+    left = "\\boxed{"
 
-    text = text.replace("\\boxed ", "\\boxed{")
-    text = text.replace("\\boxed{", "")
+    assert s[: len(left)] == left
+    assert s[-1] == "}"
 
-    return text
+    return s[len(left) : -1]
 
 
 class timeout:
@@ -182,7 +197,7 @@ def is_equiv(x1: str, x2: str) -> bool:
 def extract_answer(text: str) -> str:
     INVALID_ANSWER = "[invalidanswer]"
     match = re.search(
-        r"Final Answer: The final answer is(.*?).",
+        r"Final Answer: The final answer is (.*?).\n",
         text,
     )
     if match:
@@ -191,13 +206,50 @@ def extract_answer(text: str) -> str:
         return INVALID_ANSWER
 
 
+SUBSTITUTIONS = [
+    ("an ", ""),
+    ("a ", ""),
+    (".$", "$"),
+    ("\\$", ""),
+    (r"\ ", ""),
+    (" ", ""),
+    ("mbox", "text"),
+    (",\\text{and}", ","),
+    ("\\text{and}", ","),
+    ("\\text{m}", "\\text{}"),
+]
+
+REMOVED_EXPRESSIONS = [
+    "\\text{s}",
+    "\\text{.}",
+    "\\text{\ns}",
+    "\\text{}^2",
+    "\\text{}^3",
+    "\\text{\n}",
+    "\\text{}",
+    r"\mathrm{th}",
+    r"^\circ",
+    r"^{\circ}",
+    r"\;",
+    r",\!",
+    "{,}",
+    '"',
+    "\\dots",
+]
+
+
 def normalize_final_answer(final_answer: str) -> str:
     """
     Normalize a final answer to a quantitative reasoning question.
 
-    Copied character for character from appendix D of Lewkowycz et al. (2022)
+    Close to appendix D of Lewkowycz et al. (2022), but we simplified the removed expressions 
     """
     final_answer = final_answer.split("=")[-1]
+
+    for before, after in SUBSTITUTIONS:
+        final_answer = final_answer.replace(before, after)
+    for expr in REMOVED_EXPRESSIONS:
+        final_answer = final_answer.replace(expr, "")
 
     # Extract answer that is in LaTeX math, is bold,
     # is surrounded by a box, etc.
