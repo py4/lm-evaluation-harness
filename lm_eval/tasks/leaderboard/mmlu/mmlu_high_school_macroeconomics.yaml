@@ -3,6 +3,6 @@
   \ school macroeconomics.\n\n"
 "group": "leaderboard_mmlu_social_sciences"
 "group_alias": "social_sciences"
-"include": "_default_template_yaml"
+"include": "_template_yaml"
 "task": "leaderboard_mmlu_high_school_macroeconomics"
 "task_alias": "high_school_macroeconomics"

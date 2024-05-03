@@ -3,6 +3,6 @@
   \ ethics.\n\n"
 "group": "leaderboard_mmlu_other"
 "group_alias": "other"
-"include": "_default_template_yaml"
+"include": "_template_yaml"
 "task": "leaderboard_mmlu_business_ethics"
 "task_alias": "business_ethics"

@@ -3,6 +3,6 @@
   \ medicine.\n\n"
 "group": "leaderboard_mmlu_other"
 "group_alias": "other"
-"include": "_default_template_yaml"
+"include": "_template_yaml"
 "task": "leaderboard_mmlu_professional_medicine"
 "task_alias": "professional_medicine"

@@ -3,6 +3,6 @@
   \ school government and politics.\n\n"
 "group": "leaderboard_mmlu_social_sciences"
 "group_alias": "social_sciences"
-"include": "_default_template_yaml"
+"include": "_template_yaml"
 "task": "leaderboard_mmlu_high_school_government_and_politics"
 "task_alias": "high_school_government_and_politics"

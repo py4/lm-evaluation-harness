@@ -3,6 +3,6 @@
   \ knowledge.\n\n"
 "group": "leaderboard_mmlu_other"
 "group_alias": "other"
-"include": "_default_template_yaml"
+"include": "_template_yaml"
 "task": "leaderboard_mmlu_clinical_knowledge"
 "task_alias": "clinical_knowledge"

@@ -3,6 +3,6 @@
   \ genetics.\n\n"
 "group": "leaderboard_mmlu_other"
 "group_alias": "other"
-"include": "_default_template_yaml"
+"include": "_template_yaml"
 "task": "leaderboard_mmlu_medical_genetics"
 "task_alias": "medical_genetics"

@@ -3,6 +3,6 @@
   \ computer science.\n\n"
 "group": "leaderboard_mmlu_stem"
 "group_alias": "stem"
-"include": "_default_template_yaml"
+"include": "_template_yaml"
 "task": "leaderboard_mmlu_college_computer_science"
 "task_alias": "college_computer_science"

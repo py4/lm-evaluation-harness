@@ -2,3 +2,5 @@ group: leaderboard
 task:
   - leaderboard_mmlu
   - leaderboard_bbh
+  - leaderboard_gpqa
+  - leaderboard_math

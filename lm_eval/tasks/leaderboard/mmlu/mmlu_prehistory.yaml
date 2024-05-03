@@ -3,6 +3,6 @@
   \n"
 "group": "leaderboard_mmlu_humanities"
 "group_alias": "humanities"
-"include": "_default_template_yaml"
+"include": "_template_yaml"
 "task": "leaderboard_mmlu_prehistory"
 "task_alias": "prehistory"
