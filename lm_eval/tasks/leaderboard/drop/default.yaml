@@ -1,4 +1,5 @@
-task: drop
+task: leaderboard_drop
+group: leaderboard_reasoning
 dataset_path: EleutherAI/drop
 output_type: generate_until
 training_split: train

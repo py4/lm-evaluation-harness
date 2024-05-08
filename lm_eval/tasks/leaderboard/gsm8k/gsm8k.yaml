@@ -1,6 +1,5 @@
-group:
-  - math_word_problems
-task: gsm8k
+task: leaderboard_gsm8k
+group: leaderboard_math
 dataset_path: gsm8k
 dataset_name: main
 output_type: generate_until

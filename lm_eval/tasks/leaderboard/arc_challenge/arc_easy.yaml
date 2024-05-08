@@ -1,5 +1,5 @@
 group:
-  - ai2_arc
+  - leaderboard_reasoning
 task: arc_easy
 dataset_path: allenai/ai2_arc
 dataset_name: ARC-Easy

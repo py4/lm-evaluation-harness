@@ -1,4 +1,5 @@
-task: ifeval
+task: leaderboard_ifeval
+group: leaderboard_instruction_following
 dataset_path: wis-k/instruction-following-eval
 dataset_name: null
 output_type: generate_until
