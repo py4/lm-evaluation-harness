@@ -13,6 +13,7 @@ from accelerate import (
     InitProcessGroupKwargs,
     find_executable_batch_size,
 )
+from huggingface_hub import HfApi
 from packaging import version
 from peft import PeftModel
 from peft import __version__ as PEFT_VERSION
@@ -77,7 +78,7 @@ class HFLM(TemplateLM):
 
     def __init__(
         self,
-        pretrained: Optional[Union[str, transformers.PreTrainedModel]] = "gpt2",
+        pretrained: Union[str, transformers.PreTrainedModel],
         backend: Optional[Literal["default", "causal", "seq2seq"]] = "default",
         # override whether the model should be treated as decoder-only (causal) or encoder-decoder (seq2seq)
         revision: Optional[str] = "main",
@@ -198,6 +199,15 @@ class HFLM(TemplateLM):
             config=self.config, backend=backend, trust_remote_code=trust_remote_code
         )
 
+        # load tokenizer so we know tokenizer vocabulary size before loading model and PEFT
+        self._create_tokenizer(
+            pretrained,
+            tokenizer,
+            revision=revision,
+            trust_remote_code=trust_remote_code,
+            use_fast_tokenizer=use_fast_tokenizer,
+        )
+
         # if we passed `pretrained` as a string, initialize our model now
         if isinstance(pretrained, str):
             self._create_model(
@@ -233,14 +243,6 @@ class HFLM(TemplateLM):
                     eval_logger.debug(
                         "Failed to place model onto specified device. This may be because the model is quantized via `bitsandbytes` or `device_map` is provided. If the desired GPU is being used, this message is safe to ignore."
                     )
-
-        self._create_tokenizer(
-            pretrained,
-            tokenizer,
-            revision=revision,
-            trust_remote_code=trust_remote_code,
-            use_fast_tokenizer=use_fast_tokenizer,
-        )
 
         self.truncation = truncation
         self.logits_cache = logits_cache
@@ -278,7 +280,10 @@ class HFLM(TemplateLM):
             )
 
         self._max_length = max_length
-
+        self.pretrained = pretrained
+        self.delta = delta
+        self.peft = peft
+        self.revision = revision
         self.batch_schedule = 1
         self.batch_sizes = {}
         self.max_batch_size = max_batch_size
@@ -575,6 +580,10 @@ class HFLM(TemplateLM):
             if model_kwargs.get("load_in_4bit", None):
                 if version.parse(PEFT_VERSION) < version.parse("0.4.0"):
                     raise AssertionError("load_in_4bit requires peft >= 0.4.0")
+            if self._model.config.vocab_size != len(self.tokenizer):
+                # resize model for LoRAs with added tokens
+                self._model.resize_token_embeddings(len(self.tokenizer))
+                eval_logger.info(f"Model config indicates vocab_size='{self._model.config.vocab_size}', but found tokenizer with vocab size '{len(self.tokenizer)}'. Resizing model embedding layer...") 
             self._model = PeftModel.from_pretrained(
                 self._model, peft, revision=revision
             )
@@ -663,6 +672,8 @@ class HFLM(TemplateLM):
             max_cont_enc = len(continuation_enc[-(self.max_length + 1) :])
         else:
             max_length = self.max_length
+            max_context_enc = max_length
+            max_cont_enc = max_length
 
         # if OOM, then halves batch_size and tries again
         @find_executable_batch_size(starting_batch_size=self.max_batch_size)
@@ -1272,3 +1283,44 @@ class HFLM(TemplateLM):
         pbar.close()
 
         return res
+
+    def get_model_info(self) -> dict:
+        """
+        Method to get Hugging Face model information for experiment reproducibility.
+        """
+
+        def get_model_num_params(model) -> int:
+            if hasattr(model, "num_parameters"):
+                return model.num_parameters()
+            if hasattr(model, "parameters"):
+                return sum(p.numel() for p in model.parameters())
+            else:
+                return -1
+
+        def get_model_dtype(model) -> str:
+            if hasattr(model, "dtype"):
+                return model.dtype
+            else:
+                return ""
+
+        def get_model_sha(pretrained: str, revision: str) -> str:
+            try:
+                model_info = HfApi().model_info(repo_id=pretrained, revision=revision)
+                return model_info.sha
+            except Exception as e:
+                eval_logger.warn(
+                    f"Failed to get model SHA for {pretrained} at revision {revision}. Error: {e}"
+                )
+                return ""
+
+        model_info = {
+            "model_num_parameters": get_model_num_params(self._model),
+            "model_dtype": get_model_dtype(self._model),
+            "model_revision": self.revision,
+            "model_sha": get_model_sha(self.pretrained, self.revision),
+        }
+        if self.peft:
+            model_info["peft_sha"] = get_model_sha(self.peft, self.revision)
+        if self.delta:
+            model_info["delta_sha"] = get_model_sha(self.delta, self.revision)
+        return model_info
