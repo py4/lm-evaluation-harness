@@ -378,7 +378,7 @@ class EvaluationTracker:
 
             # Special case for MMLU with a single split covering it all
             # We add another config with all MMLU splits results together for easy inspection
-            SPECIAL_TASKS = ["mmlu", "gpqa", "minerva_math"]
+            SPECIAL_TASKS = ["mmlu", "gpqa", "minerva_math", "bbh"]
             for special_task in SPECIAL_TASKS:
                 if special_task in config_name:
                     special_task = f"{model_name}__{special_task}"
