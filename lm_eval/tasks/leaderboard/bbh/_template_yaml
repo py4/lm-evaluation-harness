@@ -19,3 +19,5 @@ num_fewshot: 0
 metadata:
   version: 0.0
   num_fewshot: 3 # will be printed in results table, since the few shots samples are harcoded
+fewshot_config:
+  sampler: first_n
