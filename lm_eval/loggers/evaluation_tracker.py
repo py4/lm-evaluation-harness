@@ -122,6 +122,8 @@ class EvaluationTracker:
         hub_repo_name = hub_repo_name if hub_repo_name else "lm-eval-results"
         self.hub_results_repo = f"{hub_results_org}/{hub_repo_name}"
         self.hub_results_repo_private = f"{hub_results_org}/{hub_repo_name}-private"
+        self.results_repo = f"{hub_results_org}/results"
+        self.results_repo_private = f"{hub_results_org}/results-private"
         self.push_results_to_hub = push_results_to_hub
         self.push_samples_to_hub = push_samples_to_hub
         self.public_repo = public_repo
@@ -176,20 +178,22 @@ class EvaluationTracker:
                 file_results_aggregated.open("w", encoding="utf-8").write(dumped)
 
                 if self.api and self.push_results_to_hub:
+                    print(f"{path=}")
+                    print(f"{self.general_config_tracker.model_name_sanitized=}")
                     self.api.create_repo(
-                        repo_id=self.hub_results_repo
+                        repo_id=self.results_repo
                         if self.public_repo
-                        else self.hub_results_repo_private,
+                        else self.results_repo_private,
                         repo_type="dataset",
                         private=not self.public_repo,
                         exist_ok=True,
                     )
-                    self.api.upload_folder(
-                        repo_id=self.hub_results_repo
+                    self.api.upload_file(
+                        repo_id=self.results_repo
                         if self.public_repo
-                        else self.hub_results_repo_private,
-                        folder_path=str(path),
-                        path_in_repo=self.general_config_tracker.model_name_sanitized,
+                        else self.results_repo_private,
+                        path_or_fileobj=file_results_aggregated,
+                        path_in_repo=os.path.join(self.general_config_tracker.model_name_sanitized.replace("__", "/"), f"results_{self.date_id}.json"),
                         repo_type="dataset",
                         commit_message=f"Adding aggregated results for {self.general_config_tracker.model_name}",
                     )

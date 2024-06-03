@@ -1,6 +1,6 @@
 group: leaderboard
 task:
-  - leaderboard_mmlu
+  - leaderboard_mmlu_pro
   - leaderboard_bbh
   - leaderboard_gpqa
   - leaderboard_math
