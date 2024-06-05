@@ -23,7 +23,6 @@ generation_kwargs:
     - "Question:"
   do_sample: false
   temperature: 0.0
-  max_gen_toks: 2048
 repeats: 1
 fewshot_config:
   sampler: first_n

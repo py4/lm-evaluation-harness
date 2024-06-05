@@ -140,6 +140,7 @@ class HFLM(TemplateLM):
                     revision=revision,
                     trust_remote_code=trust_remote_code,
                     use_fast=use_fast_tokenizer,
+                    force_download=True,
                 )
 
         else:
@@ -491,6 +492,7 @@ class HFLM(TemplateLM):
             pretrained,
             revision=revision,
             trust_remote_code=trust_remote_code,
+            force_download=True,
         )
 
     def _create_model(
@@ -1248,6 +1250,8 @@ class HFLM(TemplateLM):
                 until.append(eos)
             if "max_gen_toks" in kwargs.keys():
                 max_gen_toks = kwargs.pop("max_gen_toks")
+                if max_gen_toks > self.max_length:
+                    max_gen_toks = self.max_gen_toks
             else:
                 max_gen_toks = self.max_gen_toks
 

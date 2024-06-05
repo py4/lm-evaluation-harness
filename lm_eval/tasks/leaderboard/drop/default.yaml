@@ -12,7 +12,8 @@ process_results: !function utils.process_results
 should_decontaminate: true
 doc_to_decontamination_query: "{{passage}} {{question}}"
 generation_kwargs:
-  until: []
+  until:
+    - "\n\n"
 fewshot_config:
   sampler: first_n
 num_fewshot: 5
