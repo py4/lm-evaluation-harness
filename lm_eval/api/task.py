@@ -375,7 +375,8 @@ class Task(abc.ABC):
         rewrite_requests_cache=False,
         system_instruction=None,
         apply_chat_template=False,
-        tokenizer=None,
+        fewshot_as_multiturn=False,
+        lm=None,
     ) -> None:
         """Build a set of Instances for a task, and store them in task.instances"""
 
@@ -383,6 +384,14 @@ class Task(abc.ABC):
         og_limit = limit
 
         cache_key = f"requests-{self._config.task}-{self.config.num_fewshot}shot-rank{rank}-world_size{world_size}"
+        cache_key += "-chat_template" if apply_chat_template else ""
+        cache_key += "-fewshot_as_multiturn" if fewshot_as_multiturn else ""
+        cache_key += (
+            f"-system_prompt_hash{utils.hash_string(system_instruction)}"
+            if system_instruction is not None
+            else ""
+        )
+        cache_key += f"-tokenizer{lm.tokenizer_name}" if apply_chat_template else ""
 
         cached_instances = load_from_cache(file_name=cache_key)
 
@@ -426,7 +435,8 @@ class Task(abc.ABC):
                 0 if self.config.num_fewshot is None else self.config.num_fewshot,
                 system_instruction,
                 apply_chat_template,
-                tokenizer,
+                fewshot_as_multiturn,
+                lm,
             )
 
             # TODO: we should override self.config.repeats if doing greedy gen so users don't waste time+compute
@@ -981,15 +991,36 @@ class ConfigurableTask(Task):
                 f"{s['role']}: {s['content']}" + self.sampler.fewshot_delimiter
                 for s in chat_history
             )
+    @staticmethod
+    def append_target_question(
+        labeled_examples: List[Dict[str, str]],
+        question: str,
+        fewshot_as_multiturn: bool = False,
+    ) -> None:
+        """Adds a target question to the labeled examples list.
+        If fewshot_as_multiturn is True, or labeled_examples is empty, or the last entry is a system turn, appends the question as a new user entry.
+        Otherwise, it is appended to the last user entry, ensuring that the conversation alternates between the user and the assistant.
+        """
+        if not fewshot_as_multiturn:
+            # if no messages or last message is system, append as new user entry
+            if len(labeled_examples) == 0 or labeled_examples[-1]["role"] == "system":
+                labeled_examples.append({"role": "user", "content": question})
+            # if last message is user, append to it to avoid two user messages in a row
+            else:
+                labeled_examples[-1]["content"] += question
+        else:
+            # if fewshot_as_multiturn is True, append as next user entry (last is always assistant)
+            labeled_examples.append({"role": "user", "content": question})
 
     @utils.positional_deprecated
     def fewshot_context(
         self,
         doc: str,
         num_fewshot: int,
-        system_instruction: str = "",
+        system_instruction: Optional[str] = None,
         apply_chat_template: bool = False,
-        tokenizer=None,
+        fewshot_as_multiturn: bool = False,
+        lm=None,
     ) -> str:
         """Returns a fewshot context string that is made up of a prepended description
         (if provided), the `num_fewshot` number of examples, and an appended prompt example.
@@ -1002,8 +1033,10 @@ class ConfigurableTask(Task):
             System instruction to be applied to the prompt.
         :param apply_chat_template: bool
             Whether to apply the chat template to the fewshot context.
-        :param tokenizer:
-            The tokenizer to use for applying the chat template.
+        :param fewshot_as_multiturn: bool
+            Whether to provide the fewshot examples as a multiturn conversation or a single user turn.
+        :param lm:
+            Language model with definition of the tokenizer/function to use for applying the chat template.
         :returns: str
             The fewshot context.
         """
@@ -1018,11 +1051,11 @@ class ConfigurableTask(Task):
             description = utils.apply_template(self.config.description, doc)
 
         # create system prompt based on the provided system instruction and description
-        if system_instruction and description:
+        if system_instruction is not None and description:
             system_prompt = (
                 f"{system_instruction}{self.sampler.fewshot_delimiter}{description}"
             )
-        elif system_instruction:
+        elif system_instruction is not None:
             system_prompt = system_instruction
         elif description:
             system_prompt = description
@@ -1039,51 +1072,57 @@ class ConfigurableTask(Task):
         # if few-shot - append examples after the system prompt
         if num_fewshot > 0:
             if apply_chat_template:
-                labeled_examples = self.sampler.get_chat_context(
-                    doc, num_fewshot, labeled_examples
+                labeled_examples.extend(
+                    self.sampler.get_chat_context(
+                        doc, num_fewshot, fewshot_as_multiturn
+                    )
                 )
             else:
                 labeled_examples += self.sampler.get_context(doc, num_fewshot)
 
         example = self.doc_to_text(doc)
         if apply_chat_template:
-            if not self.multiple_input:
-                if isinstance(example, str):
-                    labeled_examples.append({"role": "user", "content": example})
-                elif isinstance(example, list):
-                    labeled_examples_list = []
-                    for ex in example:
-                        chat = deepcopy(labeled_examples)
-                        chat.append({"role": "user", "content": ex})
-                        labeled_examples_list.append(
-                            self.convert_chat_history_to_string(chat, tokenizer)
-                        )
-                    return labeled_examples_list
-                elif isinstance(example, int):
-                    if self.config.doc_to_choice is not None:
-                        choices = self.doc_to_choice(doc)
-                        labeled_examples.append(
-                            {"role": "user", "content": choices[example]}
-                        )
-                    else:
-                        labeled_examples.append(
-                            {"role": "user", "content": str(example)}
-                        )
-            return self.convert_chat_history_to_string(labeled_examples, tokenizer)
+            if self.multiple_input:
+                return lm.apply_chat_template(labeled_examples)
+            if isinstance(example, str):
+                self.append_target_question(
+                    labeled_examples, example, fewshot_as_multiturn
+                )
+            # for loglikelihood create a list of questions with appended choices
+            elif isinstance(example, list):
+                labeled_examples_list = []
+                # copy chat history for each example and append the answer
+                for ex in example:
+                    chat = deepcopy(labeled_examples)
+                    self.append_target_question(chat, ex, fewshot_as_multiturn)
+                    labeled_examples_list.append(lm.apply_chat_template(chat))
+                return labeled_examples_list
+            # if example is an integer, append the choice or convert to string
+            elif isinstance(example, int):
+                if self.config.doc_to_choice is not None:
+                    choices = self.doc_to_choice(doc)
+                    self.append_target_question(
+                        labeled_examples, choices[example], fewshot_as_multiturn
+                    )
+                else:
+                    self.append_target_question(
+                        labeled_examples, str(example), fewshot_as_multiturn
+                    )
+                # return lm.apply_chat_template(labeled_examples)
+            return lm.apply_chat_template(labeled_examples)
         else:
             if self.multiple_input:
                 return labeled_examples
-            else:
-                if isinstance(example, str):
-                    return labeled_examples + example
-                elif isinstance(example, list):
-                    return [labeled_examples + ex for ex in example]
-                elif isinstance(example, int):
-                    if self.config.doc_to_choice is not None:
-                        choices = self.doc_to_choice(doc)
-                        return labeled_examples + choices[example]
-                    else:
-                        return labeled_examples + str(example)
+            if isinstance(example, str):
+                return labeled_examples + example
+            elif isinstance(example, list):
+                return [labeled_examples + ex for ex in example]
+            elif isinstance(example, int):
+                if self.config.doc_to_choice is not None:
+                    choices = self.doc_to_choice(doc)
+                    return labeled_examples + choices[example]
+                else:
+                    return labeled_examples + str(example)
 
     def apply_filters(self):
         """Iterates over FilterEnsembles and applies them to instances"""
