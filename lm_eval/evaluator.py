@@ -342,6 +342,8 @@ def evaluate(
     log_samples: bool = True,
     system_instruction: Optional[str] = None,
     apply_chat_template: bool = False,
+    system_instruction: Optional[str] = None,
+    apply_chat_template: bool = False,
     fewshot_as_multiturn: bool = False,
     verbosity: str = "INFO",
 ):
@@ -363,11 +365,8 @@ def evaluate(
         System instruction to be applied to the prompt
     :param apply_chat_template: bool
         If True, apply chat template to the prompt
-<<<<<<< HEAD
-=======
     :param fewshot_as_multiturn: bool
         Whether to provide the fewshot examples as a multiturn conversation or a single user turn.
->>>>>>> origin/main
     :return
         Dictionary of results
     """
