@@ -342,8 +342,6 @@ def evaluate(
     log_samples: bool = True,
     system_instruction: Optional[str] = None,
     apply_chat_template: bool = False,
-    system_instruction: Optional[str] = None,
-    apply_chat_template: bool = False,
     fewshot_as_multiturn: bool = False,
     verbosity: str = "INFO",
 ):
