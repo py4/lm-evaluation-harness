@@ -570,8 +570,8 @@ class HFLM(TemplateLM):
                 revision=revision,
                 torch_dtype=get_dtype(dtype),
                 trust_remote_code=trust_remote_code,
-                **model_kwargs,
                 force_download=True,
+                **model_kwargs,
             )
         else:
             try:

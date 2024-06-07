@@ -215,10 +215,10 @@ class EvaluationTracker:
                         private=not self.public_repo,
                         exist_ok=True,
                     )
-                    self.api.upload_folder(
-                        repo_id=repo_id,
-                        folder_path=str(path),
-                        path_in_repo=self.general_config_tracker.model_name_sanitized,
+                    self.api.upload_file(
+                        repo_id="HuggingFaceEvalInternal/results-private",
+                        path_or_fileobj=str(path.joinpath(f"results_{self.date_id}.json")),
+                        path_in_repo=os.path.join(self.general_config_tracker.model_name, f"results_{self.date_id}.json"),
                         repo_type="dataset",
                         commit_message=f"Adding aggregated results for {self.general_config_tracker.model_name}",
                     )
@@ -380,14 +380,15 @@ class EvaluationTracker:
             sanitized_last_eval_date_results = re.sub(
                 r"[^\w\.]", "_", latest_task_results_datetime[config_name]
             )
-            # Ensure that all results files are listed in the metadata card
-            current_results = card_metadata.get(config_name, {"data_files": []})
-            current_results["data_files"].append(
-                {"split": eval_date_sanitized, "path": [str(results_filename)]}
-            )
-            card_metadata[config_name] = current_results
-            # If the results file is the newest, update the "latest" field in the metadata card
+
             if eval_date_sanitized == sanitized_last_eval_date_results:
+                # Ensure that all results files are listed in the metadata card
+                current_results = card_metadata.get(config_name, {"data_files": []})
+                current_results["data_files"].append(
+                    {"split": eval_date_sanitized, "path": [str(results_filename)]}
+                )
+                card_metadata[config_name] = current_results
+                # If the results file is the newest, update the "latest" field in the metadata card
                 card_metadata[config_name]["data_files"].append(
                     {"split": "latest", "path": [str(results_filename)]}
                 )
@@ -406,64 +407,64 @@ class EvaluationTracker:
             sanitized_last_eval_date_results = re.sub(
                 r"[^\w\.]", "_", latest_task_results_datetime[config_name]
             )
-            # Ensure that all sample results files are listed in the metadata card
-            current_details_for_task = card_metadata.get(
-                config_name, {"data_files": []}
-            )
-            current_details_for_task["data_files"].append(
-                {"split": eval_date_sanitized, "path": [str(results_filename)]}
-            )
-            card_metadata[config_name] = current_details_for_task
-            # If the samples results file is the newest, update the "latest" field in the metadata card
             if eval_date_sanitized == sanitized_last_eval_date_results:
+                # Ensure that all sample results files are listed in the metadata card
+                current_details_for_task = card_metadata.get(
+                    config_name, {"data_files": []}
+                )
+                current_details_for_task["data_files"].append(
+                    {"split": eval_date_sanitized, "path": [str(results_filename)]}
+                )
+                card_metadata[config_name] = current_details_for_task
+                # If the samples results file is the newest, update the "latest" field in the metadata card
                 card_metadata[config_name]["data_files"].append(
                     {"split": "latest", "path": [str(results_filename)]}
                 )
 
-            # Special case for MMLU with a single split covering it all
-            # We add another config with all MMLU splits results together for easy inspection
-            SPECIAL_TASKS = ["mmlu", "gpqa", "minerva_math"]
-            for special_task in SPECIAL_TASKS:
-                if special_task in config_name:
-                    special_task = f"{model_name}__{special_task}"
-                    former_entry = card_metadata.get(special_task, {"data_files": []})
+                # Special case for MMLU with a single split covering it all
+                # We add another config with all MMLU splits results together for easy inspection
+                SPECIAL_TASKS = ["gpqa", "minerva_math"]
+                for special_task in SPECIAL_TASKS:
+                    if special_task in config_name:
+                        special_task = f"{model_name}__{special_task}"
+                        former_entry = card_metadata.get(special_task, {"data_files": []})
 
-                    former_split = [
-                        (i, entry)
-                        for i, entry in enumerate(former_entry["data_files"])
-                        if entry.get("split", None) == eval_date_sanitized
-                    ]
-
-                    if len(former_split) == 0:
-                        former_entry["data_files"].append(
-                            {
-                                "split": eval_date_sanitized,
-                                "path": [str(results_filename)],
-                            }
-                        )
-                    else:
-                        split_index, _ = former_split[0]
-                        former_entry["data_files"][split_index]["path"].append(
-                            str(results_filename)
-                        )
-
-                    if eval_date_sanitized == sanitized_last_eval_date_results:
-                        latest_split = [
+                        former_split = [
                             (i, entry)
                             for i, entry in enumerate(former_entry["data_files"])
-                            if entry.get("split", None) == "latest"
+                            if entry.get("split", None) == eval_date_sanitized
                         ]
-                        if len(latest_split) == 0:
+
+                        if len(former_split) == 0:
                             former_entry["data_files"].append(
-                                {"split": "latest", "path": [str(results_filename)]}
+                                {
+                                    "split": eval_date_sanitized,
+                                    "path": [str(results_filename)],
+                                }
                             )
                         else:
-                            latest_index, _ = latest_split[0]
-                            former_entry["data_files"][latest_index]["path"].append(
+                            split_index, _ = former_split[0]
+                            former_entry["data_files"][split_index]["path"].append(
                                 str(results_filename)
                             )
 
-                    card_metadata[special_task] = former_entry
+                        if eval_date_sanitized == sanitized_last_eval_date_results:
+                            latest_split = [
+                                (i, entry)
+                                for i, entry in enumerate(former_entry["data_files"])
+                                if entry.get("split", None) == "latest"
+                            ]
+                            if len(latest_split) == 0:
+                                former_entry["data_files"].append(
+                                    {"split": "latest", "path": [str(results_filename)]}
+                                )
+                            else:
+                                latest_index, _ = latest_split[0]
+                                former_entry["data_files"][latest_index]["path"].append(
+                                    str(results_filename)
+                                )
+
+                        card_metadata[special_task] = former_entry
 
         # Get latest results and extract info to update metadata card examples
         latest_datetime = max(latest_task_results_datetime.values())

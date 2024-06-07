@@ -176,8 +176,6 @@ exact_match = hf_evaluate.load("exact_match")
     aggregation="mean",
 )
 def exact_match_fn(**kwargs):
-    from pprint import pprint
-    pprint(kwargs)
     return exact_match.compute(**kwargs)
 
 
