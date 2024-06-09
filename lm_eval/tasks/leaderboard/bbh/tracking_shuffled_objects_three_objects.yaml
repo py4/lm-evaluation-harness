@@ -59,4 +59,4 @@ fewshot_config:
       (C) Patrick'
     target: (C)
 include: _fewshot_template_yaml
-task: bbh_fewshot_tracking_shuffled_objects_three_objects
+task: leaderboard_bbh_fewshot_tracking_shuffled_objects_three_objects

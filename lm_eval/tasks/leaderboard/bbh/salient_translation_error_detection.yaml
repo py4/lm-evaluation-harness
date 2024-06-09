@@ -74,4 +74,4 @@ fewshot_config:
       \ Antonyms\n(D) Named Entities\n(E) Dropped Content\n(F) Facts"
     target: (C)
 include: _fewshot_template_yaml
-task: bbh_fewshot_salient_translation_error_detection
+task: leaderboard_bbh_fewshot_salient_translation_error_detection

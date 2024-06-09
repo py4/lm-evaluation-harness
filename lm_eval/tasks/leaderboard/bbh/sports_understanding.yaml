@@ -19,4 +19,4 @@ fewshot_config:
       goal tend."
     target: 'yes'
 include: _fewshot_template_yaml
-task: bbh_fewshot_sports_understanding
+task: leaderboard_bbh_fewshot_sports_understanding

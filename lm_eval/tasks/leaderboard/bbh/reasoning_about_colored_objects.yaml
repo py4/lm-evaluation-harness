@@ -116,4 +116,4 @@ fewshot_config:
       (G) six'
     target: (A)
 include: _fewshot_template_yaml
-task: bbh_fewshot_reasoning_about_colored_objects
+task: leaderboard_bbh_fewshot_reasoning_about_colored_objects

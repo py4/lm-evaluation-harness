@@ -44,4 +44,4 @@ fewshot_config:
       to be, moral?'
     target: (A)
 include: _fewshot_template_yaml
-task: bbh_fewshot_snarks
+task: leaderboard_bbh_fewshot_snarks

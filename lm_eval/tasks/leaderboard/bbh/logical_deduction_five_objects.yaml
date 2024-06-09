@@ -52,4 +52,4 @@ fewshot_config:
       (C) The white book is the leftmost'
     target: (C)
 include: _fewshot_template_yaml
-task: bbh_fewshot_logical_deduction_five_objects
+task: leaderboard_bbh_fewshot_logical_deduction_five_objects

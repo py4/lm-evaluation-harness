@@ -50,4 +50,4 @@ fewshot_config:
       (C) Ambiguous'
     target: (C)
 include: _fewshot_template_yaml
-task: bbh_fewshot_disambiguation_qa
+task: leaderboard_bbh_fewshot_disambiguation_qa

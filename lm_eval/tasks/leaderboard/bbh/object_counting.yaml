@@ -20,4 +20,4 @@ fewshot_config:
       two carrots, a garlic, and a yam. How many vegetables do I have?
     target: '8'
 include: _fewshot_template_yaml
-task: bbh_fewshot_object_counting
+task: leaderboard_bbh_fewshot_object_counting

@@ -16,4 +16,4 @@ fewshot_config:
   - input: not not ( not ( False ) ) is
     target: 'True'
 include: _fewshot_template_yaml
-task: bbh_fewshot_boolean_expressions
+task: leaderboard_bbh_fewshot_boolean_expressions

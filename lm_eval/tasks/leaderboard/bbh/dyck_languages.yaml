@@ -20,4 +20,4 @@ fewshot_config:
       ] > }'
     target: '} ] >'
 include: _fewshot_template_yaml
-task: bbh_fewshot_dyck_languages
+task: leaderboard_bbh_fewshot_dyck_languages

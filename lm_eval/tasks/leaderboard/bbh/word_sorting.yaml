@@ -18,4 +18,4 @@ fewshot_config:
       mugho aspect census'
     target: arson aspect census mugho newt parthia seismography
 include: _fewshot_template_yaml
-task: bbh_fewshot_word_sorting
+task: leaderboard_bbh_fewshot_word_sorting

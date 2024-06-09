@@ -64,4 +64,4 @@ fewshot_config:
       - No'
     target: 'Yes'
 include: _fewshot_template_yaml
-task: bbh_fewshot_causal_judgement
+task: leaderboard_bbh_fewshot_causal_judgement
