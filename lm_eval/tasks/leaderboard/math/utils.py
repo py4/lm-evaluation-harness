@@ -16,8 +16,11 @@ except ModuleNotFoundError:
 please install sympy via pip install lm-eval[math] or pip install -e .[math]",
     )
 
+
+# taken from
+# https://github.com/wellecks/lm-evaluation-harness/blob/master/lm_eval/tasks/minerva_math.py
 def doc_to_text(doc: dict) -> str:
-    return f"Problem:\n{doc['problem']}\n\nSolution:"
+    return "Problem:" + "\n" + doc["problem"] + "\n\n" + "Solution:"
 
 
 def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
@@ -29,21 +32,54 @@ def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
                 remove_boxed(last_boxed_only_string(doc["solution"]))
             ),
         }
+        if getattr(doc, "few_shot", None) is not None:
+            out_doc["few_shot"] = True
         return out_doc
 
     return dataset.map(_process_doc)
 
 
+def list_fewshot_samples() -> list[dict]:
+    return [
+        {
+            "problem": "Find the domain of the expression  $\\frac{\\sqrt{x-2}}{\\sqrt{5-x}}$.}",
+            "solution": "The expressions inside each square root must be non-negative. Therefore, $x-2 \\ge 0$, so $x\\ge2$, and $5 - x \\ge 0$, so $x \\le 5$. Also, the denominator cannot be equal to zero, so $5-x>0$, which gives $x<5$. Therefore, the domain of the expression is $\\boxed{[2,5)}$.\nFinal Answer: The final answer is $[2,5)$. I hope it is correct.",
+            "few_shot": "1",
+        },
+        {
+            "problem": "If $\\det \\mathbf{A} = 2$ and $\\det \\mathbf{B} = 12,$ then find $\\det (\\mathbf{A} \\mathbf{B}).$",
+            "solution": "We have that $\\det (\\mathbf{A} \\mathbf{B}) = (\\det \\mathbf{A})(\\det \\mathbf{B}) = (2)(12) = \\boxed{24}.$\nFinal Answer: The final answer is $24$. I hope it is correct.",
+            "few_shot": "1",
+        },
+        {
+            "problem": "Terrell usually lifts two 20-pound weights 12 times. If he uses two 15-pound weights instead, how many times must Terrell lift them in order to lift the same total weight?",
+            "solution": "If Terrell lifts two 20-pound weights 12 times, he lifts a total of $2\\cdot 12\\cdot20=480$ pounds of weight.  If he lifts two 15-pound weights instead for $n$ times, he will lift a total of $2\\cdot15\\cdot n=30n$ pounds of weight.  Equating this to 480 pounds, we can solve for $n$:\n\\begin{align*}\n30n&=480\\\n\\Rightarrow\\qquad n&=480/30=\\boxed{16}\n\\end{align*}\nFinal Answer: The final answer is $16$. I hope it is correct.",
+            "few_shot": "1",
+        },
+        {
+            "problem": "If the system of equations\n\n\\begin{align*}\n6x-4y&=a,\\\n6y-9x &=b.\n\\end{align*}has a solution $(x, y)$ where $x$ and $y$ are both nonzero,\nfind $\\frac{a}{b},$ assuming $b$ is nonzero.",
+            "solution": "If we multiply the first equation by $-\\frac{3}{2}$, we obtain\n\n$$6y-9x=-\\frac{3}{2}a.$$Since we also know that $6y-9x=b$, we have\n\n$$-\\frac{3}{2}a=b\\Rightarrow\\frac{a}{b}=\\boxed{-\\frac{2}{3}}.$$\nFinal Answer: The final answer is $-\\frac{2}{3}$. I hope it is correct.",
+            "few_shot": "1",
+        },
+    ]
+
+
 def process_results(doc: dict, results: List[str]) -> Dict[str, int]:
     candidates = results[0]
 
-    extracted_answer = extract_answer(candidates)
-    answer = normalize_final_answer(extracted_answer)
+    unnormalized_answer = get_unnormalized_answer(candidates)
+    answer = normalize_final_answer(unnormalized_answer)
+
+    if is_equiv(answer, doc["answer"]):
+        retval = 1
+    else:
+        retval = 0
 
     results = {
-        "exact_match": 1 if is_equiv(answer, doc["answer"]) else 0,
+        "exact_match": retval,
     }
     return results
+
 
 def last_boxed_only_string(string: str) -> Optional[str]:
     idx = string.rfind("\\boxed")
@@ -148,10 +184,12 @@ def is_equiv(x1: str, x2: str) -> bool:
         return False
 
 
-def extract_answer(text: str) -> str:
+def get_unnormalized_answer(text: str) -> str:
     INVALID_ANSWER = "[invalidanswer]"
+    end_seq = "I hope it is correct."
+    text += end_seq
     match = re.search(
-        r"Final Answer: The final answer is (.*?).\n",
+        r"Final Answer: The final answer is(.*?). I hope it is correct.",
         text,
     )
     if match:
@@ -172,8 +210,34 @@ SUBSTITUTIONS = [
     ("\\text{and}", ","),
     ("\\text{m}", "\\text{}"),
 ]
-
 REMOVED_EXPRESSIONS = [
+    "square",
+    "ways",
+    "integers",
+    "dollars",
+    "mph",
+    "inches",
+    "ft",
+    "hours",
+    "km",
+    "units",
+    "\\ldots",
+    "sue",
+    "points",
+    "feet",
+    "minutes",
+    "digits",
+    "cents",
+    "degrees",
+    "cm",
+    "gm",
+    "pounds",
+    "meters",
+    "meals",
+    "edges",
+    "students",
+    "childrentickets",
+    "multiples",
     "\\text{s}",
     "\\text{.}",
     "\\text{\ns}",
@@ -196,7 +260,7 @@ def normalize_final_answer(final_answer: str) -> str:
     """
     Normalize a final answer to a quantitative reasoning question.
 
-    Close to appendix D of Lewkowycz et al. (2022), but we simplified the removed expressions 
+    Copied character for character from appendix D of Lewkowycz et al. (2022)
     """
     final_answer = final_answer.split("=")[-1]
 

@@ -272,6 +272,7 @@ class EvaluationTracker:
                     sample["resps"] = sanitize_list(sample["resps"])
                     sample["filtered_resps"] = sanitize_list(sample["filtered_resps"])
                     sample["arguments"] = arguments
+                    sample["target"] = str(sample["target"])
 
                     sample_dump = (
                         json.dumps(
@@ -423,10 +424,10 @@ class EvaluationTracker:
 
                 # Special case for MMLU with a single split covering it all
                 # We add another config with all MMLU splits results together for easy inspection
-                SPECIAL_TASKS = ["gpqa", "minerva_math"]
+                SPECIAL_TASKS = ["gpqa", "math_", "bbh_", "musr"]
                 for special_task in SPECIAL_TASKS:
                     if special_task in config_name:
-                        special_task = f"{model_name}__{special_task}"
+                        special_task = f"{model_name}__{special_task.split('_')[0]}"
                         former_entry = card_metadata.get(special_task, {"data_files": []})
 
                         former_split = [

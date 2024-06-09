@@ -5,7 +5,6 @@ task:
   - leaderboard_gpqa
   - leaderboard_math
   - leaderboard_ifeval
-  - leaderboard_gsm8k
-  - leaderboard_drop
+  - leaderboard_musr
   - leaderboard_arc_challenge
 

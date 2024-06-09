@@ -50,7 +50,7 @@ class HFLM(TemplateLM):
     """
 
     AUTO_MODEL_CLASS = None
-    _DEFAULT_MAX_LENGTH = 2048
+    _DEFAULT_MAX_LENGTH = 2047
 
     def __init__(
         self,
@@ -517,7 +517,7 @@ class HFLM(TemplateLM):
             pretrained,
             revision=revision,
             trust_remote_code=trust_remote_code,
-            force_download=True,
+            force_download=False,
         )
 
     def _create_model(
@@ -585,7 +585,7 @@ class HFLM(TemplateLM):
                 revision=revision,
                 torch_dtype=get_dtype(dtype),
                 trust_remote_code=trust_remote_code,
-                force_download=True,
+                force_download=False,
                 **model_kwargs,
             )
         else:
@@ -679,7 +679,7 @@ class HFLM(TemplateLM):
                     revision=revision,
                     trust_remote_code=trust_remote_code,
                     use_fast=use_fast_tokenizer,
-                    force_download=True
+                    force_download=False
                 )
             else:
                 assert isinstance(
@@ -701,7 +701,7 @@ class HFLM(TemplateLM):
             )
         return None
 
-    def _detect_batch_size(self, requests=None, pos: int = 0):
+    def _detect_batch_size(self, requests=None, pos: int = 0, longest_context=None) -> int:
         if requests:
             _, context_enc, continuation_enc = requests[pos]
             max_length = len(
@@ -709,10 +709,11 @@ class HFLM(TemplateLM):
             )
             max_context_enc = len(context_enc[-(self.max_length + 1) :])
             max_cont_enc = len(continuation_enc[-(self.max_length + 1) :])
-        else:
-            max_length = self.max_length
+        elif longest_context is not None:
+            max_length = longest_context
             max_context_enc = max_length
             max_cont_enc = max_length
+            print(f"finding batch size for max_length {max_length}")
 
         # if OOM, then halves batch_size and tries again
         @find_executable_batch_size(starting_batch_size=self.max_batch_size)
@@ -732,8 +733,9 @@ class HFLM(TemplateLM):
                 test_batch = torch.ones(
                     (batch_size, max_length), device=self.device
                 ).long()
+
             for _ in range(5):
-                out = F.log_softmax(self._model_call(test_batch, **call_kwargs), dim=-1)  # noqa: F841
+                F.log_softmax(self._model_call(inps=test_batch, **call_kwargs), dim=-1)  # noqa: F841
 
             return batch_size
 
@@ -1209,7 +1211,8 @@ class HFLM(TemplateLM):
         if self.batch_size == "auto":
             # using rolling window with maximum context
             print("Passed argument batch_size = auto. Detecting largest batch size")
-            batch_size = self._detect_batch_size()
+            longest_context = max([len(request.args[0]) + request.args[1].get("max_gen_toks", self.max_length) for request in requests])
+            batch_size = self._detect_batch_size(longest_context=longest_context)
             print(f"Determined Largest batch size: {batch_size}")
             adaptive_batch_size = batch_size
         # for each different set of kwargs, we execute all requests, by batch.
