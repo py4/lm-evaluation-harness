@@ -703,15 +703,23 @@ class HFLM(TemplateLM):
             )
         return None
 
-    def _detect_batch_size(self, requests=None, pos: int = 0, longest_context=None) -> int:
-        if requests:
+    def _detect_batch_size(self, requests=None, pos: int = 0) -> int:
+        if len(requests[0]) == 3: # logprob evals
             _, context_enc, continuation_enc = requests[pos]
             max_length = len(
                 (context_enc + continuation_enc)[-(self.max_length + 1) :][:-1]
             )
             max_context_enc = len(context_enc[-(self.max_length + 1) :])
             max_cont_enc = len(continuation_enc[-(self.max_length + 1) :])
-        elif longest_context is not None:
+        elif len(requests[0]) == 2: # generative evals
+            # using rolling window with maximum context
+            print("Passed argument batch_size = auto. Detecting largest batch size")
+            overall_longest_context = max([len(self.tok_encode(request[0])) for request in requests[pos:]])
+            longest_needed_generation = max([request[1].get("max_gen_toks", self.max_length) for request in requests[pos:]])
+            print(f"Longest context: {overall_longest_context}")
+            print(f"Longest needed generation: {longest_needed_generation}")
+            longest_context=overall_longest_context+longest_needed_generation
+
             max_length = longest_context
             max_context_enc = max_length
             max_cont_enc = max_length
@@ -1209,29 +1217,14 @@ class HFLM(TemplateLM):
             disable=(disable_tqdm or (self.rank != 0)),
             desc="Running generate_until requests",
         )
-        adaptive_batch_size = None
-        if self.batch_size == "auto":
-            # using rolling window with maximum context
-            print("Passed argument batch_size = auto. Detecting largest batch size")
-            longest_context = max([len(self.tok_encode(request.args[0])) for request in requests])
-            longest_needed_generation = max([request.args[1].get("max_gen_toks", self.max_length) for request in requests])
-            print(f"Longest context: {longest_context}")
-            print(f"Longest needed generation: {longest_needed_generation}")
-
-            batch_size = self._detect_batch_size(longest_context=longest_context+longest_needed_generation)
-            print(f"Determined Largest batch size: {batch_size}")
-            adaptive_batch_size = batch_size
-        # for each different set of kwargs, we execute all requests, by batch.
         batch_size = (
             self.batch_size
             if self.batch_size != "auto"
-            else adaptive_batch_size
-            if adaptive_batch_size is not None
             else 0
         )
         batch_fn = (
             self._batch_scheduler
-            if self.batch_size == "auto" and not adaptive_batch_size
+            if self.batch_size == "auto" #  and not adaptive_batch_size
             else None
         )
 
