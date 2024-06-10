@@ -513,12 +513,13 @@ class HFLM(TemplateLM):
         revision: str = "main",
         trust_remote_code: bool = False,
     ) -> None:
-        self._config = transformers.AutoConfig.from_pretrained(
-            pretrained,
-            revision=revision,
-            trust_remote_code=trust_remote_code,
-            force_download=False,
-        )
+        with self.accelerator.main_process_first():
+            self._config = transformers.AutoConfig.from_pretrained(
+                pretrained,
+                revision=revision,
+                trust_remote_code=trust_remote_code,
+                force_download=False,
+            )
 
     def _create_model(
         self,
@@ -580,14 +581,15 @@ class HFLM(TemplateLM):
             from pprint import pprint
             pprint(model_kwargs)
             pprint(get_dtype(dtype))
-            self._model = self.AUTO_MODEL_CLASS.from_pretrained(
-                pretrained,
-                revision=revision,
-                torch_dtype=get_dtype(dtype),
-                trust_remote_code=trust_remote_code,
-                force_download=False,
-                **model_kwargs,
-            )
+            with self.accelerator.main_process_first():
+                self._model = self.AUTO_MODEL_CLASS.from_pretrained(
+                    pretrained,
+                    revision=revision,
+                    torch_dtype=get_dtype(dtype),
+                    trust_remote_code=trust_remote_code,
+                    force_download=False,
+                    **model_kwargs,
+                )
         else:
             try:
                 from auto_gptq import AutoGPTQForCausalLM
@@ -1211,8 +1213,12 @@ class HFLM(TemplateLM):
         if self.batch_size == "auto":
             # using rolling window with maximum context
             print("Passed argument batch_size = auto. Detecting largest batch size")
-            longest_context = max([len(request.args[0]) + request.args[1].get("max_gen_toks", self.max_length) for request in requests])
-            batch_size = self._detect_batch_size(longest_context=longest_context)
+            longest_context = max([len(self.tok_encode(request.args[0])) for request in requests])
+            longest_needed_generation = max([request.args[1].get("max_gen_toks", self.max_length) for request in requests])
+            print(f"Longest context: {longest_context}")
+            print(f"Longest needed generation: {longest_needed_generation}")
+
+            batch_size = self._detect_batch_size(longest_context=longest_context+longest_needed_generation)
             print(f"Determined Largest batch size: {batch_size}")
             adaptive_batch_size = batch_size
         # for each different set of kwargs, we execute all requests, by batch.

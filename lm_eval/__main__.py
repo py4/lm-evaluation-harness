@@ -5,6 +5,7 @@ import os
 import sys
 from functools import partial
 from typing import Union
+from accelerate import Accelerator
 
 from lm_eval import evaluator, utils
 from lm_eval.evaluator import request_caching_arg_to_dict
@@ -387,7 +388,9 @@ def cli_evaluate(args: Union[argparse.Namespace, None] = None) -> None:
         **request_caching_args,
     )
 
-    if results is not None:
+    accelerator = Accelerator()
+
+    if results is not None and accelerator.is_main_process:
         if args.log_samples:
             samples = results.pop("samples")
         dumped = json.dumps(
