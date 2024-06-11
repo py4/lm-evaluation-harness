@@ -714,11 +714,8 @@ class HFLM(TemplateLM):
         elif len(requests[0]) == 2: # generative evals
             # using rolling window with maximum context
             print("Passed argument batch_size = auto. Detecting largest batch size")
-            overall_longest_context = max([len(self.tok_encode(request[0])) for request in requests[pos:]])
-            longest_needed_generation = max([request[1].get("max_gen_toks", self.max_length) for request in requests[pos:]])
-            print(f"Longest context: {overall_longest_context}")
-            print(f"Longest needed generation: {longest_needed_generation}")
-            longest_context=overall_longest_context+longest_needed_generation
+            longest_context = max([len(self.tok_encode(request[0])) + request[1].get("max_gen_toks", self.max_length) for request in requests[pos:]])
+            print(f"Longest context + generation: {longest_context}")
 
             max_length = longest_context
             max_context_enc = max_length
@@ -980,6 +977,10 @@ class HFLM(TemplateLM):
         print(f"Determined largest batch size: {self.batch_sizes[sched]}")
         return self.batch_sizes[sched]
 
+    def _reset_batch_scheduler(self):
+        """When we change group in generative evaluations, we reset the batch size"""
+        self.batch_sizes = {}
+
     def _loglikelihood_tokens(
         self,
         requests: List[Tuple[Tuple[str, str], List[int], List[int]]],
@@ -1238,7 +1239,7 @@ class HFLM(TemplateLM):
             group_by="gen_kwargs",
             group_fn=lambda x: x[1],
         )
-        chunks = re_ords.get_batched(n=batch_size, batch_fn=batch_fn)
+        chunks = re_ords.get_batched(n=batch_size, batch_fn=batch_fn, reset_batch_fn=self._reset_batch_scheduler)
         for chunk in chunks:
             contexts, all_gen_kwargs = zip(*chunk)
             # we assume all gen kwargs in the batch are the same
