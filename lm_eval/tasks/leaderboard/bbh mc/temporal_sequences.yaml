@@ -1,7 +1,7 @@
 dataset_name: temporal_sequences
 description: 'Task description: Answer questions about which times certain events
   could have occurred.\n\n'
-doc_to_choices: ["(A)","(B)","(C)","(D)"]
+doc_to_choice: ["(A)","(B)","(C)","(D)"]
 fewshot_config:
   sampler: first_n
   samples:

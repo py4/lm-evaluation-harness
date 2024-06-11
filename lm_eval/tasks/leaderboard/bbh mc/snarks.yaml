@@ -9,7 +9,7 @@ description: 'Determine which of two sentences is sarcastic.
 
 
   '
-doc_to_choices: ["(A)","(B)"]
+doc_to_choice: ["(A)","(B)"]
 fewshot_config:
   sampler: first_n
   samples:

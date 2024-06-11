@@ -1,6 +1,6 @@
 dataset_name: web_of_lies
 description: 'Evaluate a random boolean function expressed as a word problem.\n\n'
-doc_to_choices: ["Yes","No"]
+doc_to_choice: ["Yes","No"]
 fewshot_config:
   sampler: first_n
   samples:

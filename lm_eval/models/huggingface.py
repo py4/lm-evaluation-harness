@@ -737,7 +737,7 @@ class HFLM(TemplateLM):
                 }
             else:
                 call_kwargs = {}
-                test_batch = torch.ones(
+                test_batch = torch.rand(
                     (batch_size, max_length), device=self.device
                 ).long()
 

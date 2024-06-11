@@ -1,6 +1,6 @@
 dataset_name: hyperbaton
 description: 'Order adjectives correctly in English sentences.\n\n'
-doc_to_choices: ["(A)", "(B)"]
+doc_to_choice: ["(A)", "(B)"]
 fewshot_config:
   sampler: first_n
   samples:

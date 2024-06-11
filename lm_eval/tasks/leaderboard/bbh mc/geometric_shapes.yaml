@@ -1,6 +1,6 @@
 dataset_name: geometric_shapes
 description: 'Name geometric shapes from their SVG paths.\n\n'
-doc_to_choices: ["(A)","(B)","(C)","(D)","(E)","(F)","(G)","(H)","(I)","(J)","(K)"]
+doc_to_choice: ["(A)","(B)","(C)","(D)","(E)","(F)","(G)","(H)","(I)","(J)","(K)"]
 fewshot_config:
   sampler: first_n
   samples:

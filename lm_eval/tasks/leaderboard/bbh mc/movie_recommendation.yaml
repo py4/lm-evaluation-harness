@@ -1,6 +1,6 @@
 dataset_name: movie_recommendation
 description: 'Recommend movies similar to the given list of movies.\n\n'
-doc_to_choices: ["(A)","(B)","(C)","(D)","(E)","(F)"]
+doc_to_choice: ["(A)","(B)","(C)","(D)","(E)","(F)"]
 fewshot_config:
   sampler: first_n
   samples:

@@ -1,7 +1,7 @@
 dataset_name: salient_translation_error_detection
 description: 'Detect the type of error in an English translation of a German source
   sentence.\n\n'
-doc_to_choices: ["(A)","(B)","(C)","(D)","(E)","(F)"]
+doc_to_choice: ["(A)","(B)","(C)","(D)","(E)","(F)"]
 fewshot_config:
   sampler: first_n
   samples:
