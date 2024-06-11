@@ -3,8 +3,8 @@ task:
   #- leaderboard_mmlu_pro
   - leaderboard_bbh
   #- leaderboard_gpqa
-  - leaderboard_math
-  - leaderboard_ifeval
+  #- leaderboard_math
+  #- leaderboard_ifeval
   #- leaderboard_musr
   #- leaderboard_arc_challenge
 
