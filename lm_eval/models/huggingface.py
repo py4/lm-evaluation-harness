@@ -725,12 +725,13 @@ class HFLM(TemplateLM):
         # if OOM, then halves batch_size and tries again
         @find_executable_batch_size(starting_batch_size=self.max_batch_size)
         def forward_batch(batch_size):
+            security_margin = int(0.1 * batch_size)
             if self.AUTO_MODEL_CLASS == transformers.AutoModelForSeq2SeqLM:
                 length = max(max_context_enc, max_cont_enc)
                 batched_conts = torch.ones(
-                    (batch_size, length), device=self.device
+                    (batch_size + security_margin, length), device=self.device
                 ).long()
-                test_batch = torch.ones((batch_size, length), device=self.device).long()
+                test_batch = torch.ones((batch_size + security_margin, length), device=self.device).long()
                 call_kwargs = {
                     "attn_mask": test_batch,
                     "labels": batched_conts,
@@ -738,11 +739,12 @@ class HFLM(TemplateLM):
             else:
                 call_kwargs = {}
                 test_batch = torch.rand(
-                    (batch_size, max_length), device=self.device
+                    (batch_size + security_margin, max_length), device=self.device
                 ).long()
 
-            for _ in range(5):
-                F.log_softmax(self._model_call(inps=test_batch, **call_kwargs), dim=-1)  # noqa: F841
+            for _ in range(10):
+                logits = self._model_call(inps=test_batch, **call_kwargs).float()
+                scores = F.log_softmax(logits, dim=-1)  # noqa: F841
 
             return batch_size
 
@@ -1140,7 +1142,7 @@ class HFLM(TemplateLM):
                 }
 
             multi_logits = F.log_softmax(
-                self._model_call(batched_inps, **call_kwargs), dim=-1
+                self._model_call(batched_inps, **call_kwargs).float(), dim=-1
             )  # [batch, padding_length (inp or cont), vocab]
 
             for (request_str, ctx_tokens, _), logits, inplen, cont_toks in zip(
