@@ -711,6 +711,7 @@ class HFLM(TemplateLM):
             )
             max_context_enc = len(context_enc[-(self.max_length + 1) :])
             max_cont_enc = len(continuation_enc[-(self.max_length + 1) :])
+            security_margin_factor = 2 # batch sizes for log prob evals sometimes generate OOMs
         elif len(requests[0]) == 2: # generative evals
             # using rolling window with maximum context
             print("Passed argument batch_size = auto. Detecting largest batch size")
@@ -720,6 +721,7 @@ class HFLM(TemplateLM):
             max_length = longest_context
             max_context_enc = max_length
             max_cont_enc = max_length
+            security_margin_factor = 1
             print(f"finding batch size for max_length {max_length}")
 
         # if OOM, then halves batch_size and tries again
@@ -742,7 +744,7 @@ class HFLM(TemplateLM):
                     (batch_size + security_margin, max_length), device=self.device
                 ).long()
 
-            for _ in range(10):
+            for _ in range(5*security_margin_factor):
                 logits = self._model_call(inps=test_batch, **call_kwargs).float()
                 scores = F.log_softmax(logits, dim=-1)  # noqa: F841
 
