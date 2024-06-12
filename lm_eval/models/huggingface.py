@@ -721,7 +721,7 @@ class HFLM(TemplateLM):
             max_length = longest_context
             max_context_enc = max_length
             max_cont_enc = max_length
-            security_margin_factor = 1
+            security_margin_factor = 2
             print(f"finding batch size for max_length {max_length}")
 
         # if OOM, then halves batch_size and tries again
