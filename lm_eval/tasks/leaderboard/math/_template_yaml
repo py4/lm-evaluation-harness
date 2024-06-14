@@ -1,6 +1,6 @@
 group:
-  - leaderboard_math
-dataset_path: EleutherAI/hendrycks_math
+  - leaderboard_math_hard
+dataset_path: lighteval/MATH-Hard
 process_docs: !function utils.process_docs
 output_type: generate_until
 training_split: train
@@ -13,7 +13,7 @@ generation_kwargs:
     - "Problem:"
   do_sample: false
   temperature: 0
-  max_gen_toks: 512
+  max_gen_toks: 1024
 metric_list:
   - metric: exact_match
     aggregation: mean

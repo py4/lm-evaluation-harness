@@ -389,7 +389,7 @@ class Collator:
             self._arr_with_indices, fn=self._group_fn, group_by="contexts"
         )
 
-    def get_batched(self, n: int = 1, batch_fn: Optional[Callable] = None, reset_batch_fn: Optional[Callable] = None) -> Iterator:
+    def get_batched(self, n: int = 1, batch_fn: Optional[Callable] = None, reset_batch_fn: Optional[Callable] = None, accelerator=None) -> Iterator:
         """
         Generates and yields batches from the reordered array. The method of grouping and batching
         depends on the parameter `group_by`.
@@ -415,6 +415,7 @@ class Collator:
         if self._group_by == "gen_kwargs":
             for key, values in self._arr_with_indices.items():  # type: ignore
                 if reset_batch_fn is not None: # with each group change, we must recompute the batch size, so we restart the scheduler
+                    print(f"Resetting batch_fn for process {accelerator.local_process_index}")
                     reset_batch_fn()
                 values = self._reorder(values)
                 batch = self.get_chunks(values, n=n, fn=batch_fn)

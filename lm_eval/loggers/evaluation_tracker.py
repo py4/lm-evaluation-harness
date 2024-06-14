@@ -364,7 +364,10 @@ class EvaluationTracker:
                 results_datetime,
             )
             latest_task_results_datetime[samples_key] = latest_datetime
-            latest_task_results_datetime[results_key] = latest_datetime
+            latest_task_results_datetime[results_key] = max(
+                latest_task_results_datetime[results_key],
+                latest_datetime,
+            )
 
         # Create metadata card
         card_metadata = MetadataConfigs()
@@ -409,6 +412,7 @@ class EvaluationTracker:
                 r"[^\w\.]", "_", latest_task_results_datetime[config_name]
             )
             if eval_date_sanitized == sanitized_last_eval_date_results:
+                print(f"adding {config_name} for {eval_date_sanitized}")
                 # Ensure that all sample results files are listed in the metadata card
                 current_details_for_task = card_metadata.get(
                     config_name, {"data_files": []}

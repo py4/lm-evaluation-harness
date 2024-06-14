@@ -3,6 +3,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 from typing import Dict, List, Literal, Optional, Tuple, Union
+import jinja2
 
 import torch
 import torch.nn.functional as F
@@ -110,8 +111,7 @@ class HFLM(TemplateLM):
             gpus = torch.cuda.device_count()
             accelerator_kwargs = InitProcessGroupKwargs(timeout=timedelta(weeks=52))
             accelerator = Accelerator(kwargs_handlers=[accelerator_kwargs])
-            if accelerator.num_processes > 1:
-                self.accelerator = accelerator
+            self.accelerator = accelerator
 
             if "npu" in accelerator.device.type:
                 gpus = torch.npu.device_count()
@@ -714,15 +714,11 @@ class HFLM(TemplateLM):
             security_margin_factor = 2 # batch sizes for log prob evals sometimes generate OOMs
         elif len(requests[0]) == 2: # generative evals
             # using rolling window with maximum context
-            print("Passed argument batch_size = auto. Detecting largest batch size")
             longest_context = max([len(self.tok_encode(request[0])) + request[1].get("max_gen_toks", self.max_length) for request in requests[pos:]])
-            print(f"Longest context + generation: {longest_context}")
-
             max_length = longest_context
             max_context_enc = max_length
             max_cont_enc = max_length
             security_margin_factor = 2
-            print(f"finding batch size for max_length {max_length}")
 
         # if OOM, then halves batch_size and tries again
         @find_executable_batch_size(starting_batch_size=self.max_batch_size)
@@ -751,6 +747,7 @@ class HFLM(TemplateLM):
             return batch_size
 
         try:
+            print(f"finding batch size on process {self.accelerator.local_process_index}")
             batch_size = forward_batch()
         except RuntimeError as e:
             if "No executable batch size found" in str(e):
@@ -761,6 +758,7 @@ class HFLM(TemplateLM):
         if self.world_size > 1:
             # if multi-GPU, always take minimum over all selected batch sizes
             max_rnk_bs = torch.tensor([batch_size], device=self.device)
+            print(f"gathering on process {self.accelerator.local_process_index}")
             gathered = (
                 self.accelerator.gather(max_rnk_bs).cpu().detach().numpy().tolist()
             )
@@ -1042,7 +1040,7 @@ class HFLM(TemplateLM):
             else None
         )
 
-        chunks = re_ord.get_batched(n=batch_size, batch_fn=batch_fn)
+        chunks = re_ord.get_batched(n=batch_size, batch_fn=batch_fn, accelerator=self.accelerator)
         pbar = tqdm(
             total=len(requests),
             disable=(disable_tqdm or (self.rank != 0)),
@@ -1206,6 +1204,8 @@ class HFLM(TemplateLM):
     ) -> List[str]:
         res = []
 
+        self.accelerator.wait_for_everyone()
+
         def _collate(req: Tuple[str, dict]):
             """Defines the key for the sorted method"""
             # the negative sign on len(toks) sorts descending - this has a few advantages:
@@ -1336,9 +1336,21 @@ class HFLM(TemplateLM):
         """
         Method to apply a chat template to a list of chat history between user and model.
         """
-        return self.tokenizer.apply_chat_template(
-            chat_history, tokenize=False, add_generation_prompt=True
-        )
+        try:
+            chat_templated = self.tokenizer.apply_chat_template(
+                chat_history, tokenize=False, add_generation_prompt=True
+            )
+        except jinja2.exceptions.TemplateError:
+            eval_logger.warning(
+                "Failed to apply chat template. removing the system role in chat history."
+            )
+            chat_history = [msg for msg in chat_history if msg["role"] != "system"]
+            chat_templated = self.tokenizer.apply_chat_template(
+                chat_history, tokenize=False, add_generation_prompt=True
+            )
+            
+
+        return chat_templated
 
     def get_model_info(self) -> dict:
         """

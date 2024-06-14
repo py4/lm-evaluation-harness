@@ -1,10 +1,10 @@
 group: leaderboard
 task:
-  #- leaderboard_mmlu_pro
-  #- leaderboard_bbh
-  #- leaderboard_gpqa
-  - leaderboard_math
+  - leaderboard_mmlu_pro
+  - leaderboard_bbh
+  - leaderboard_gpqa
+  - leaderboard_math_hard
   - leaderboard_ifeval
-  #- leaderboard_musr
-  #- leaderboard_arc_challenge
+  - leaderboard_musr
+  - leaderboard_arc_challenge
 
