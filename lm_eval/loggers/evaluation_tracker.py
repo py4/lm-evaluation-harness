@@ -87,7 +87,12 @@ class GeneralConfigTracker:
             hash_string(system_instruction) if system_instruction else None
         )
         self.chat_template = chat_template
-        self.chat_template_sha = hash_string(chat_template) if chat_template else None
+        self.chat_template_sha = None
+        if chat_template:
+            if not isinstance(chat_template, str):
+                self.chat_template_sha = hash_string(str(chat_template))
+            else:
+                self.chat_template_sha = hash_string(chat_template)
 
     def log_end_time(self) -> None:
         """Logs the end time of the evaluation and calculates the total evaluation time."""
