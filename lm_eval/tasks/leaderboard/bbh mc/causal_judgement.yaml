@@ -1,5 +1,7 @@
 dataset_name: causal_judgement
-description: 'Answer questions about causal attribution.\n\n'
+description: 'Answer questions about causal attribution.
+
+        '
 doc_to_choice: ["Yes", "No"]
 fewshot_config:
   sampler: first_n
