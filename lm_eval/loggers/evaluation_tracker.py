@@ -6,6 +6,7 @@ from collections import defaultdict
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
+from huggingface_hub.utils import build_hf_headers, get_session, hf_raise_for_status
 
 from datasets import load_dataset
 from datasets.utils.metadata import MetadataConfigs
@@ -209,11 +210,7 @@ class EvaluationTracker:
                 file_results_aggregated.open("w", encoding="utf-8").write(dumped)
 
                 if self.api and self.push_results_to_hub:
-                    repo_id = (
-                        self.hub_results_repo
-                        if self.public_repo
-                        else self.hub_results_repo_private
-                    )
+                    repo_id = "open-llm-leaderboard/results_v2"
                     self.api.create_repo(
                         repo_id=repo_id,
                         repo_type="dataset",
@@ -221,7 +218,7 @@ class EvaluationTracker:
                         exist_ok=True,
                     )
                     self.api.upload_file(
-                        repo_id="HuggingFaceEvalInternal/results-private",
+                        repo_id=repo_id,
                         path_or_fileobj=str(path.joinpath(f"results_{self.date_id}.json")),
                         path_in_repo=os.path.join(self.general_config_tracker.model_name, f"results_{self.date_id}.json"),
                         repo_type="dataset",
@@ -303,6 +300,13 @@ class EvaluationTracker:
                         private=not self.public_repo,
                         exist_ok=True,
                     )
+                    headers = build_hf_headers()
+                    r = get_session().put(
+                        url=f"https://huggingface.co/api/datasets/{repo_id}/settings",
+                        headers=headers,
+                        json={"gated": "auto"},
+                    )
+                    hf_raise_for_status(r)
                     self.api.upload_folder(
                         repo_id=repo_id,
                         folder_path=str(path),

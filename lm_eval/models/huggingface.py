@@ -51,7 +51,7 @@ class HFLM(TemplateLM):
     """
 
     AUTO_MODEL_CLASS = None
-    _DEFAULT_MAX_LENGTH = 2047
+    _DEFAULT_MAX_LENGTH = 2048
 
     def __init__(
         self,
@@ -578,10 +578,8 @@ class HFLM(TemplateLM):
                             model_kwargs["bnb_4bit_compute_dtype"]
                         )
 
-            from pprint import pprint
-            pprint(model_kwargs)
-            pprint(get_dtype(dtype))
             with self.accelerator.main_process_first():
+                #model_kwargs["device_map"] = "balanced_low_0"
                 self._model = self.AUTO_MODEL_CLASS.from_pretrained(
                     pretrained,
                     revision=revision,
@@ -711,14 +709,20 @@ class HFLM(TemplateLM):
             )
             max_context_enc = len(context_enc[-(self.max_length + 1) :])
             max_cont_enc = len(continuation_enc[-(self.max_length + 1) :])
-            security_margin_factor = 2 # batch sizes for log prob evals sometimes generate OOMs
+            security_margin_factor = 6 # batch sizes for log prob evals sometimes generate OOMs
         elif len(requests[0]) == 2: # generative evals
             # using rolling window with maximum context
             longest_context = max([len(self.tok_encode(request[0])) + request[1].get("max_gen_toks", self.max_length) for request in requests[pos:]])
+            if longest_context > self.max_length:
+                eval_logger.warning(
+                    f"Longest context length of {longest_context} exceeds max_length of {self.max_length}. Truncating to max_length."
+                )
+                longest_context = self.max_length
             max_length = longest_context
             max_context_enc = max_length
             max_cont_enc = max_length
-            security_margin_factor = 2
+            security_margin_factor = 6
+
 
         # if OOM, then halves batch_size and tries again
         @find_executable_batch_size(starting_batch_size=self.max_batch_size)
@@ -1060,6 +1064,8 @@ class HFLM(TemplateLM):
             # tensors, then we pack them together into a batch, call the model, and then pick it all apart
             # again because vectorizing is annoying
 
+            from pprint import pprint
+
             for _, context_enc, continuation_enc in chunk:
                 # sanity check
                 assert len(context_enc) > 0
@@ -1142,7 +1148,7 @@ class HFLM(TemplateLM):
                 }
 
             multi_logits = F.log_softmax(
-                self._model_call(batched_inps, **call_kwargs).float(), dim=-1
+                self._model_call(batched_inps, **call_kwargs), dim=-1, dtype=torch.float16
             )  # [batch, padding_length (inp or cont), vocab]
 
             for (request_str, ctx_tokens, _), logits, inplen, cont_toks in zip(
@@ -1282,6 +1288,9 @@ class HFLM(TemplateLM):
             if self.AUTO_MODEL_CLASS == transformers.AutoModelForCausalLM:
                 # max len for inputs = max length, minus room to generate the max new tokens
                 max_ctx_len = self.max_length - max_gen_toks
+                while max_ctx_len <= 0:
+                    max_gen_toks = max_gen_toks // 2
+                    max_ctx_len = self.max_length - max_gen_toks
             elif self.AUTO_MODEL_CLASS == transformers.AutoModelForSeq2SeqLM:
                 # max len for inputs = encoder's whole max_length
                 max_ctx_len = self.max_length
