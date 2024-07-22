@@ -1458,6 +1458,304 @@
                     "version": 1.0
                 }
             }
+        },
+        "leaderboard_math_hard": {
+            "limit": 1,
+            "num_fewshot": 0,
+            "leaderboard_math_algebra_hard": {
+                "task": "leaderboard_math_algebra_hard",
+                "group": [
+                    "leaderboard_math_hard"
+                ],
+                "dataset_path": "lighteval/MATH-Hard",
+                "dataset_name": "algebra",
+                "dataset_kwargs": {
+                    "trust_remote_code": true
+                },
+                "training_split": "train",
+                "test_split": "test",
+                "process_docs": "def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:\n    def _process_doc(doc: dict) -> dict:\n        out_doc = {\n            \"problem\": doc[\"problem\"],\n            \"solution\": doc[\"solution\"],\n            \"answer\": normalize_final_answer(\n                remove_boxed(last_boxed_only_string(doc[\"solution\"]))\n            ),\n        }\n        if getattr(doc, \"few_shot\", None) is not None:\n            out_doc[\"few_shot\"] = True\n        return out_doc\n\n    return dataset.map(_process_doc)\n",
+                "doc_to_text": "def doc_to_text(doc: dict) -> str:\n    return \"Problem:\" + \"\\n\" + doc[\"problem\"] + \"\\n\\n\" + \"Solution:\"\n",
+                "doc_to_target": "{{answer if few_shot is undefined else solution}}",
+                "process_results": "def process_results(doc: dict, results: List[str]) -> Dict[str, int]:\n    candidates = results[0]\n\n    unnormalized_answer = get_unnormalized_answer(candidates)\n    answer = normalize_final_answer(unnormalized_answer)\n\n    if is_equiv(answer, doc[\"answer\"]):\n        retval = 1\n    else:\n        retval = 0\n\n    results = {\n        \"exact_match\": retval,\n    }\n    return results\n",
+                "description": "",
+                "target_delimiter": " ",
+                "fewshot_delimiter": "\n\n",
+                "num_fewshot": 0,
+                "metric_list": [
+                    {
+                        "metric": "exact_match",
+                        "aggregation": "mean",
+                        "higher_is_better": true
+                    }
+                ],
+                "output_type": "generate_until",
+                "generation_kwargs": {
+                    "until": [
+                        "Problem:"
+                    ],
+                    "do_sample": false,
+                    "temperature": 0.0,
+                    "max_gen_toks": 1024
+                },
+                "repeats": 1,
+                "should_decontaminate": false,
+                "metadata": {
+                    "version": 1.0
+                }
+            },
+            "leaderboard_math_counting_and_prob_hard": {
+                "task": "leaderboard_math_counting_and_prob_hard",
+                "group": [
+                    "leaderboard_math_hard"
+                ],
+                "dataset_path": "lighteval/MATH-Hard",
+                "dataset_name": "counting_and_probability",
+                "dataset_kwargs": {
+                    "trust_remote_code": true
+                },
+                "training_split": "train",
+                "test_split": "test",
+                "process_docs": "def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:\n    def _process_doc(doc: dict) -> dict:\n        out_doc = {\n            \"problem\": doc[\"problem\"],\n            \"solution\": doc[\"solution\"],\n            \"answer\": normalize_final_answer(\n                remove_boxed(last_boxed_only_string(doc[\"solution\"]))\n            ),\n        }\n        if getattr(doc, \"few_shot\", None) is not None:\n            out_doc[\"few_shot\"] = True\n        return out_doc\n\n    return dataset.map(_process_doc)\n",
+                "doc_to_text": "def doc_to_text(doc: dict) -> str:\n    return \"Problem:\" + \"\\n\" + doc[\"problem\"] + \"\\n\\n\" + \"Solution:\"\n",
+                "doc_to_target": "{{answer if few_shot is undefined else solution}}",
+                "process_results": "def process_results(doc: dict, results: List[str]) -> Dict[str, int]:\n    candidates = results[0]\n\n    unnormalized_answer = get_unnormalized_answer(candidates)\n    answer = normalize_final_answer(unnormalized_answer)\n\n    if is_equiv(answer, doc[\"answer\"]):\n        retval = 1\n    else:\n        retval = 0\n\n    results = {\n        \"exact_match\": retval,\n    }\n    return results\n",
+                "description": "",
+                "target_delimiter": " ",
+                "fewshot_delimiter": "\n\n",
+                "num_fewshot": 0,
+                "metric_list": [
+                    {
+                        "metric": "exact_match",
+                        "aggregation": "mean",
+                        "higher_is_better": true
+                    }
+                ],
+                "output_type": "generate_until",
+                "generation_kwargs": {
+                    "until": [
+                        "Problem:"
+                    ],
+                    "do_sample": false,
+                    "temperature": 0.0,
+                    "max_gen_toks": 1024
+                },
+                "repeats": 1,
+                "should_decontaminate": false,
+                "metadata": {
+                    "version": 1.0
+                }
+            },
+            "leaderboard_math_geometry_hard": {
+                "task": "leaderboard_math_geometry_hard",
+                "group": [
+                    "leaderboard_math_hard"
+                ],
+                "dataset_path": "lighteval/MATH-Hard",
+                "dataset_name": "geometry",
+                "dataset_kwargs": {
+                    "trust_remote_code": true
+                },
+                "training_split": "train",
+                "test_split": "test",
+                "process_docs": "def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:\n    def _process_doc(doc: dict) -> dict:\n        out_doc = {\n            \"problem\": doc[\"problem\"],\n            \"solution\": doc[\"solution\"],\n            \"answer\": normalize_final_answer(\n                remove_boxed(last_boxed_only_string(doc[\"solution\"]))\n            ),\n        }\n        if getattr(doc, \"few_shot\", None) is not None:\n            out_doc[\"few_shot\"] = True\n        return out_doc\n\n    return dataset.map(_process_doc)\n",
+                "doc_to_text": "def doc_to_text(doc: dict) -> str:\n    return \"Problem:\" + \"\\n\" + doc[\"problem\"] + \"\\n\\n\" + \"Solution:\"\n",
+                "doc_to_target": "{{answer if few_shot is undefined else solution}}",
+                "process_results": "def process_results(doc: dict, results: List[str]) -> Dict[str, int]:\n    candidates = results[0]\n\n    unnormalized_answer = get_unnormalized_answer(candidates)\n    answer = normalize_final_answer(unnormalized_answer)\n\n    if is_equiv(answer, doc[\"answer\"]):\n        retval = 1\n    else:\n        retval = 0\n\n    results = {\n        \"exact_match\": retval,\n    }\n    return results\n",
+                "description": "",
+                "target_delimiter": " ",
+                "fewshot_delimiter": "\n\n",
+                "num_fewshot": 0,
+                "metric_list": [
+                    {
+                        "metric": "exact_match",
+                        "aggregation": "mean",
+                        "higher_is_better": true
+                    }
+                ],
+                "output_type": "generate_until",
+                "generation_kwargs": {
+                    "until": [
+                        "Problem:"
+                    ],
+                    "do_sample": false,
+                    "temperature": 0.0,
+                    "max_gen_toks": 1024
+                },
+                "repeats": 1,
+                "should_decontaminate": false,
+                "metadata": {
+                    "version": 1.0
+                }
+            },
+            "leaderboard_math_intermediate_algebra_hard": {
+                "task": "leaderboard_math_intermediate_algebra_hard",
+                "group": [
+                    "leaderboard_math_hard"
+                ],
+                "dataset_path": "lighteval/MATH-Hard",
+                "dataset_name": "intermediate_algebra",
+                "dataset_kwargs": {
+                    "trust_remote_code": true
+                },
+                "training_split": "train",
+                "test_split": "test",
+                "process_docs": "def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:\n    def _process_doc(doc: dict) -> dict:\n        out_doc = {\n            \"problem\": doc[\"problem\"],\n            \"solution\": doc[\"solution\"],\n            \"answer\": normalize_final_answer(\n                remove_boxed(last_boxed_only_string(doc[\"solution\"]))\n            ),\n        }\n        if getattr(doc, \"few_shot\", None) is not None:\n            out_doc[\"few_shot\"] = True\n        return out_doc\n\n    return dataset.map(_process_doc)\n",
+                "doc_to_text": "def doc_to_text(doc: dict) -> str:\n    return \"Problem:\" + \"\\n\" + doc[\"problem\"] + \"\\n\\n\" + \"Solution:\"\n",
+                "doc_to_target": "{{answer if few_shot is undefined else solution}}",
+                "process_results": "def process_results(doc: dict, results: List[str]) -> Dict[str, int]:\n    candidates = results[0]\n\n    unnormalized_answer = get_unnormalized_answer(candidates)\n    answer = normalize_final_answer(unnormalized_answer)\n\n    if is_equiv(answer, doc[\"answer\"]):\n        retval = 1\n    else:\n        retval = 0\n\n    results = {\n        \"exact_match\": retval,\n    }\n    return results\n",
+                "description": "",
+                "target_delimiter": " ",
+                "fewshot_delimiter": "\n\n",
+                "num_fewshot": 0,
+                "metric_list": [
+                    {
+                        "metric": "exact_match",
+                        "aggregation": "mean",
+                        "higher_is_better": true
+                    }
+                ],
+                "output_type": "generate_until",
+                "generation_kwargs": {
+                    "until": [
+                        "Problem:"
+                    ],
+                    "do_sample": false,
+                    "temperature": 0.0,
+                    "max_gen_toks": 1024
+                },
+                "repeats": 1,
+                "should_decontaminate": false,
+                "metadata": {
+                    "version": 1.0
+                }
+            },
+            "leaderboard_math_num_theory_hard": {
+                "task": "leaderboard_math_num_theory_hard",
+                "group": [
+                    "leaderboard_math_hard"
+                ],
+                "dataset_path": "lighteval/MATH-Hard",
+                "dataset_name": "number_theory",
+                "dataset_kwargs": {
+                    "trust_remote_code": true
+                },
+                "training_split": "train",
+                "test_split": "test",
+                "process_docs": "def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:\n    def _process_doc(doc: dict) -> dict:\n        out_doc = {\n            \"problem\": doc[\"problem\"],\n            \"solution\": doc[\"solution\"],\n            \"answer\": normalize_final_answer(\n                remove_boxed(last_boxed_only_string(doc[\"solution\"]))\n            ),\n        }\n        if getattr(doc, \"few_shot\", None) is not None:\n            out_doc[\"few_shot\"] = True\n        return out_doc\n\n    return dataset.map(_process_doc)\n",
+                "doc_to_text": "def doc_to_text(doc: dict) -> str:\n    return \"Problem:\" + \"\\n\" + doc[\"problem\"] + \"\\n\\n\" + \"Solution:\"\n",
+                "doc_to_target": "{{answer if few_shot is undefined else solution}}",
+                "process_results": "def process_results(doc: dict, results: List[str]) -> Dict[str, int]:\n    candidates = results[0]\n\n    unnormalized_answer = get_unnormalized_answer(candidates)\n    answer = normalize_final_answer(unnormalized_answer)\n\n    if is_equiv(answer, doc[\"answer\"]):\n        retval = 1\n    else:\n        retval = 0\n\n    results = {\n        \"exact_match\": retval,\n    }\n    return results\n",
+                "description": "",
+                "target_delimiter": " ",
+                "fewshot_delimiter": "\n\n",
+                "num_fewshot": 0,
+                "metric_list": [
+                    {
+                        "metric": "exact_match",
+                        "aggregation": "mean",
+                        "higher_is_better": true
+                    }
+                ],
+                "output_type": "generate_until",
+                "generation_kwargs": {
+                    "until": [
+                        "Problem:"
+                    ],
+                    "do_sample": false,
+                    "temperature": 0.0,
+                    "max_gen_toks": 1024
+                },
+                "repeats": 1,
+                "should_decontaminate": false,
+                "metadata": {
+                    "version": 1.0
+                }
+            },
+            "leaderboard_math_prealgebra_hard": {
+                "task": "leaderboard_math_prealgebra_hard",
+                "group": [
+                    "leaderboard_math_hard"
+                ],
+                "dataset_path": "lighteval/MATH-Hard",
+                "dataset_name": "prealgebra",
+                "dataset_kwargs": {
+                    "trust_remote_code": true
+                },
+                "training_split": "train",
+                "test_split": "test",
+                "process_docs": "def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:\n    def _process_doc(doc: dict) -> dict:\n        out_doc = {\n            \"problem\": doc[\"problem\"],\n            \"solution\": doc[\"solution\"],\n            \"answer\": normalize_final_answer(\n                remove_boxed(last_boxed_only_string(doc[\"solution\"]))\n            ),\n        }\n        if getattr(doc, \"few_shot\", None) is not None:\n            out_doc[\"few_shot\"] = True\n        return out_doc\n\n    return dataset.map(_process_doc)\n",
+                "doc_to_text": "def doc_to_text(doc: dict) -> str:\n    return \"Problem:\" + \"\\n\" + doc[\"problem\"] + \"\\n\\n\" + \"Solution:\"\n",
+                "doc_to_target": "{{answer if few_shot is undefined else solution}}",
+                "process_results": "def process_results(doc: dict, results: List[str]) -> Dict[str, int]:\n    candidates = results[0]\n\n    unnormalized_answer = get_unnormalized_answer(candidates)\n    answer = normalize_final_answer(unnormalized_answer)\n\n    if is_equiv(answer, doc[\"answer\"]):\n        retval = 1\n    else:\n        retval = 0\n\n    results = {\n        \"exact_match\": retval,\n    }\n    return results\n",
+                "description": "",
+                "target_delimiter": " ",
+                "fewshot_delimiter": "\n\n",
+                "num_fewshot": 0,
+                "metric_list": [
+                    {
+                        "metric": "exact_match",
+                        "aggregation": "mean",
+                        "higher_is_better": true
+                    }
+                ],
+                "output_type": "generate_until",
+                "generation_kwargs": {
+                    "until": [
+                        "Problem:"
+                    ],
+                    "do_sample": false,
+                    "temperature": 0.0,
+                    "max_gen_toks": 1024
+                },
+                "repeats": 1,
+                "should_decontaminate": false,
+                "metadata": {
+                    "version": 1.0
+                }
+            },
+            "leaderboard_math_precalculus_hard": {
+                "task": "leaderboard_math_precalculus_hard",
+                "group": [
+                    "leaderboard_math_hard"
+                ],
+                "dataset_path": "lighteval/MATH-Hard",
+                "dataset_name": "precalculus",
+                "dataset_kwargs": {
+                    "trust_remote_code": true
+                },
+                "training_split": "train",
+                "test_split": "test",
+                "process_docs": "def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:\n    def _process_doc(doc: dict) -> dict:\n        out_doc = {\n            \"problem\": doc[\"problem\"],\n            \"solution\": doc[\"solution\"],\n            \"answer\": normalize_final_answer(\n                remove_boxed(last_boxed_only_string(doc[\"solution\"]))\n            ),\n        }\n        if getattr(doc, \"few_shot\", None) is not None:\n            out_doc[\"few_shot\"] = True\n        return out_doc\n\n    return dataset.map(_process_doc)\n",
+                "doc_to_text": "def doc_to_text(doc: dict) -> str:\n    return \"Problem:\" + \"\\n\" + doc[\"problem\"] + \"\\n\\n\" + \"Solution:\"\n",
+                "doc_to_target": "{{answer if few_shot is undefined else solution}}",
+                "process_results": "def process_results(doc: dict, results: List[str]) -> Dict[str, int]:\n    candidates = results[0]\n\n    unnormalized_answer = get_unnormalized_answer(candidates)\n    answer = normalize_final_answer(unnormalized_answer)\n\n    if is_equiv(answer, doc[\"answer\"]):\n        retval = 1\n    else:\n        retval = 0\n\n    results = {\n        \"exact_match\": retval,\n    }\n    return results\n",
+                "description": "",
+                "target_delimiter": " ",
+                "fewshot_delimiter": "\n\n",
+                "num_fewshot": 0,
+                "metric_list": [
+                    {
+                        "metric": "exact_match",
+                        "aggregation": "mean",
+                        "higher_is_better": true
+                    }
+                ],
+                "output_type": "generate_until",
+                "generation_kwargs": {
+                    "until": [
+                        "Problem:"
+                    ],
+                    "do_sample": false,
+                    "temperature": 0.0,
+                    "max_gen_toks": 1024
+                },
+                "repeats": 1,
+                "should_decontaminate": false,
+                "metadata": {
+                    "version": 1.0
+                }
+            }
         }
     },
     "results": {
@@ -1612,6 +1910,40 @@
                 "acc_norm,none": 0.5,
                 "acc_norm_stderr,none": 0.16666666666666666
             }
+        },
+        "leaderboard_math_hard": {
+            "leaderboard_math_algebra_hard": {
+                "exact_match,none": 0.0,
+                "exact_match_stderr,none": "N/A"
+            },
+            "leaderboard_math_counting_and_prob_hard": {
+                "exact_match,none": 0.0,
+                "exact_match_stderr,none": "N/A"
+            },
+            "leaderboard_math_geometry_hard": {
+                "exact_match,none": 0.0,
+                "exact_match_stderr,none": "N/A"
+            },
+            "leaderboard_math_hard": {
+                "exact_match,none": 0.0,
+                "exact_match_stderr,none": "N/A"
+            },
+            "leaderboard_math_intermediate_algebra_hard": {
+                "exact_match,none": 0.0,
+                "exact_match_stderr,none": "N/A"
+            },
+            "leaderboard_math_num_theory_hard": {
+                "exact_match,none": 0.0,
+                "exact_match_stderr,none": "N/A"
+            },
+            "leaderboard_math_prealgebra_hard": {
+                "exact_match,none": 0.0,
+                "exact_match_stderr,none": "N/A"
+            },
+            "leaderboard_math_precalculus_hard": {
+                "exact_match,none": 0.0,
+                "exact_match_stderr,none": "N/A"
+            }
         }
     },
     "n_samples": {
@@ -1652,6 +1984,36 @@
             "leaderboard_musr_murder_mysteries": {"effective": 10, "original": 250},
             "leaderboard_musr_object_placements": {"effective": 10, "original": 256},
             "leaderboard_musr_team_allocation": {"effective": 10, "original": 250}
+        },
+        "leaderboard_math_hard": {
+            "leaderboard_math_algebra_hard": {
+                "effective": 1,
+                "original": 307
+            },
+            "leaderboard_math_counting_and_prob_hard": {
+                "effective": 1,
+                "original": 123
+            },
+            "leaderboard_math_geometry_hard": {
+                "effective": 1,
+                "original": 132
+            },
+            "leaderboard_math_intermediate_algebra_hard": {
+                "effective": 1,
+                "original": 280
+            },
+            "leaderboard_math_num_theory_hard": {
+                "effective": 1,
+                "original": 154
+            },
+            "leaderboard_math_prealgebra_hard": {
+                "effective": 1,
+                "original": 193
+            },
+            "leaderboard_math_precalculus_hard": {
+                "effective": 1,
+                "original": 135
+            }
         }
     },
     "task_hashes": {
@@ -1692,6 +2054,15 @@
             "leaderboard_musr_murder_mysteries": "fd6f0e1b68022eedbf661ed0a1bb8be3b6a270ed77990116ab3fabc98876d60c",
             "leaderboard_musr_object_placements": "4e7f2137dae81e73c1c58bdcfc166e7b0b352071077c498957cc3edf334097e0",
             "leaderboard_musr_team_allocation": "3554e0e9d017773fbc6a1b1f5315a8bdb48e566daea8700c47003ce9e344f6e5"
+        },
+        "leaderboard_math_hard": {
+            "leaderboard_math_algebra_hard": "2f89502ddb07a768ba6b4ba890843af3452a4e5b95abf59bf414b91f93b1e8d0",
+            "leaderboard_math_counting_and_prob_hard": "a69dd7fe7014a983d1347880194737b1ec632fdefea1a5195fbfba30bcbaef34",
+            "leaderboard_math_geometry_hard": "6d10a5919012af7d538ef2db3a0f4a8168f05da7956af5b3ac36bf50425a0bd3",
+            "leaderboard_math_intermediate_algebra_hard": "7574e8af8a4b1f4e7f3cdff2c924f381c35736860b310cfaa9317bd2ea128d82",
+            "leaderboard_math_num_theory_hard": "f1590383a7d2308e8377ff5dee0528baa0894d39c67b6a0baa0271175fa86110",
+            "leaderboard_math_prealgebra_hard": "417c8349219235228eb4727715e4ea75e81394495234f6679b7e0dda5722af4b",
+            "leaderboard_math_precalculus_hard": "40084380e1ee7dc9efbf1b8cedf9743cbb410091752b60da7512eafb75ec9ec7"
         }
     },
     "versions": {
@@ -1732,9 +2103,18 @@
             "leaderboard_musr_murder_mysteries": 1.0,
             "leaderboard_musr_object_placements": 1.0,
             "leaderboard_musr_team_allocation": 1.0
+        },
+        "leaderboard_math_hard": {
+            "leaderboard_math_algebra_hard": 1.0,
+            "leaderboard_math_counting_and_prob_hard": 1.0,
+            "leaderboard_math_geometry_hard": 1.0,
+            "leaderboard_math_intermediate_algebra_hard": 1.0,
+            "leaderboard_math_num_theory_hard": 1.0,
+            "leaderboard_math_prealgebra_hard": 1.0,
+            "leaderboard_math_precalculus_hard": 1.0
         }
     },
-    "transformers_version": "4.41.1",
+    "transformers_version": "4.43.0.dev0",
     "system_instruction_sha": null,
     "chat_template_sha": null,
     "max_length": 4096,
