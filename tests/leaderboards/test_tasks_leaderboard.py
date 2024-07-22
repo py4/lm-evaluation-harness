@@ -1,6 +1,6 @@
 import os
 from dataclasses import asdict
-from typing import Dict, Union
+from typing import Any, Dict
 
 import pytest
 
@@ -53,8 +53,8 @@ def update_results(results: Dict, evaluation_tracker: EvaluationTracker) -> Dict
 
 
 def compare_results(
-    target: Union[ParseConfig, Dict],
-    observed: Dict,
+    target: Dict[str, Any],
+    observed: Dict[str, Any],
     config_name: str,
     module_name: str,
     recursive: bool = False,
@@ -218,7 +218,11 @@ def test_general_output(evaluation_results: Dict):
     for task_name in config.tasks.keys():
         results = all_results[task_name]
         compare_results(
-            config, results, config.params.name, "general_output", recursive=False
+            target=config.to_dict(),
+            observed=results,
+            config_name=config.params.name,
+            module_name="general_output",
+            recursive=False,
         )
 
 
@@ -266,10 +270,10 @@ def test_evaluation_config(evaluation_results: Dict):
     for task_name in config.tasks.keys():
         results = all_results[task_name]
         compare_results(
-            expected_config,
-            results["config"],
-            config_name,
-            "config",
+            target=expected_config,
+            observed=results["config"],
+            config_name=config_name,
+            module_name="config",
             recursive=False,
         )
 
@@ -310,10 +314,10 @@ def test_tasks_configs(evaluation_results: Dict):
 
         for subtask_name, subtask_config in subtasks_configs.items():
             compare_results(
-                subtask_config,
-                results["configs"][subtask_name],
-                config.params.name,
-                subtask_name,
+                target=subtask_config,
+                observed=results["configs"][subtask_name],
+                config_name=config.params.name,
+                module_name=subtask_name,
                 recursive=False,
             )
 
@@ -345,10 +349,10 @@ def test_tasks_results(evaluation_results: Dict):
             observed_results = results["results"][task_name]
 
         compare_results(
-            expected_results,
-            observed_results,
-            config.params.name,
-            task_name,
+            target=expected_results.to_dict(),
+            observed=observed_results,
+            config_name=config.params.name,
+            module_name=task_name,
             recursive=True,
         )
 
@@ -381,10 +385,10 @@ def test_tasks_n_samples(evaluation_results: Dict):
             observed_n_samples = results["n-samples"][task_name]
 
         compare_results(
-            expected_n_samples,
-            observed_n_samples,
-            config.params.name,
-            task_name,
+            target=expected_n_samples.to_dict(),
+            observed=observed_n_samples,
+            config_name=config.params.name,
+            module_name=task_name,
             recursive=True,
         )
 
@@ -416,10 +420,10 @@ def test_tasks_hashes(evaluation_results: Dict):
         is_multitask = len(results["configs"].keys()) > 1
         if is_multitask:
             compare_results(
-                expected_hashes,
-                results["task_hashes"],
-                config.params.name,
-                task_name,
+                target=expected_hashes.to_dict(),
+                observed=results["task_hashes"],
+                config_name=config.params.name,
+                module_name=task_name,
                 recursive=True,
             )
         else:
@@ -456,10 +460,10 @@ def test_tasks_versions(evaluation_results: Dict):
         is_multitask = len(results["versions"].keys()) > 1
         if is_multitask:
             compare_results(
-                expected_versions,
-                results["versions"],
-                config.params.name,
-                task_name,
+                target=expected_versions.to_dict(),
+                observed=results["versions"],
+                config_name=config.params.name,
+                module_name=task_name,
                 recursive=True,
             )
         else:
