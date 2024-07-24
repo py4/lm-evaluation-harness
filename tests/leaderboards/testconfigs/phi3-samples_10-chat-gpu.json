@@ -1,7 +1,6 @@
 {
     "params": {
         "name": "Phi-3-mini - 10 samples - chat template",
-        "evaluation_tracker_args": "output_path=tests_results/phi3_10samples_chat/",
         "system_instruction": null,
         "chat_template": true,
         "model": "hf",

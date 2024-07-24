@@ -8,10 +8,7 @@ from lm_eval import evaluator
 from lm_eval.evaluator import request_caching_arg_to_dict
 from lm_eval.loggers import EvaluationTracker
 from lm_eval.tasks import TaskManager
-from lm_eval.utils import (
-    hash_string,
-    simple_parse_args_string,
-)
+from lm_eval.utils import hash_string
 
 from .utils import ParseConfig, filter_dict, load_all_configs
 
@@ -158,10 +155,7 @@ def evaluation_results(load_config: Dict) -> Tuple[ParseConfig, Dict]:
             - all_results (Dict): A dictionary containing the evaluation results for each task.
     """
     config = ParseConfig(load_config)
-    evaluation_tracker_args = simple_parse_args_string(
-        config.params.evaluation_tracker_args
-    )
-    evaluation_tracker = EvaluationTracker(**evaluation_tracker_args)
+    evaluation_tracker = EvaluationTracker()
     task_manager = TaskManager(config.params.verbosity, include_path=None)
     request_caching_args = request_caching_arg_to_dict(cache_requests=None)
 
