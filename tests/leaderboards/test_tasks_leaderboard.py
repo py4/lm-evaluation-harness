@@ -56,27 +56,27 @@ def update_results(results: Dict, evaluation_tracker: EvaluationTracker) -> Dict
 
 
 def compare_results(
-    target: Dict[str, Any],
+    reference: Dict[str, Any],
     observed: Dict[str, Any],
     config_name: str,
     module_name: str,
     recursive: bool = False,
 ):
     """
-    Compare values in the target and observed dictionaries,
+    Compare values between the reference and observed dictionaries,
     checking for equality or approximate equality for floats.
     Compare complex nested structures (e.g., dictionaries or lists) only if `recursive` is set to True.
-    Raise an error if a key from the target object is not present in the observed object.
+    Raise an error if a key from the reference object is not present in the observed object.
 
     Args:
-        target (Dict[str, Any]): The target ParseConfig or dictionary to compare with.
+        reference (Dict[str, Any]): The reference dictionary to compare with.
         observed (Dict[str, Any]): The observed dictionary to compare.
         config_name (str): The name of the config to display in the error message.
         module_name (str): The associated name of the subresults to display in the error message.
         recursive (bool): Whether to compare nested structures.
 
     Example:
-        target = {
+        reference = {
             "transformers_version": "4.41.1",
             "system_instruction_sha": None,
             "versions": {"drop": 3.0}  # Nested structure, compared only if recursive is set to True
@@ -86,34 +86,36 @@ def compare_results(
             "system_instruction_sha": None,
             "versions": {"drop": 3.0}  # Nested structure, compared only if recursive is set to True
         }
-        compare_results(target, observed, "example_config", "example_module")
+        compare_results(reference, observed, "example_config", "example_module")
     """
-    if not target:
-        raise ValueError("Target results are empty.")
+    if not reference:
+        raise ValueError("Reference dictionary is empty.")
 
-    for key, target_val in target.items():
+    for key, reference_val in reference.items():
         # compare nested objects only if recursive is set to True
-        if isinstance(target_val, ParseConfig):
+        if isinstance(reference_val, ParseConfig):
             if recursive:
-                compare_results(target_val, observed[key], config_name, key, recursive)
+                compare_results(
+                    reference_val, observed[key], config_name, key, recursive
+                )
                 continue
             else:
                 continue
         if key not in observed:
             raise ValueError(
                 f"Config: '{config_name} - {module_name}' failed. {key}: "
-                f"Expected: {repr(target_val)}, got: None"
+                f"Expected: {repr(reference_val)}, got: None"
             )
         observed_val = observed[key]
-        if isinstance(target_val, float):
-            assert target_val == pytest.approx(observed_val, abs=1e-4), (
+        if isinstance(reference_val, float):
+            assert reference_val == pytest.approx(observed_val, abs=1e-4), (
                 f"Config: '{config_name} - {module_name}' failed. {key}: "
-                f"Expected: {repr(target_val)}, got: {repr(observed_val)}"
+                f"Expected: {repr(reference_val)}, got: {repr(observed_val)}"
             )
         else:
-            assert target_val == observed_val, (
+            assert reference_val == observed_val, (
                 f"Config: '{config_name} - {module_name}' failed. {key}: "
-                f"Expected: {repr(target_val)}, got: {repr(observed_val)}"
+                f"Expected: {repr(reference_val)}, got: {repr(observed_val)}"
             )
 
 
@@ -220,7 +222,7 @@ def test_general_output(evaluation_results: Tuple[ParseConfig, Dict]):
     for task_name in config.tasks.keys():
         results = all_results[task_name]
         compare_results(
-            target=config.to_dict(),
+            reference=config.to_dict(),
             observed=results,
             config_name=config.params.name,
             module_name="general_output",
@@ -271,7 +273,7 @@ def test_evaluation_config(evaluation_results: Tuple[ParseConfig, Dict]):
     for task_name in config.tasks.keys():
         results = all_results[task_name]
         compare_results(
-            target=expected_config,
+            reference=expected_config,
             observed=results["config"],
             config_name=config_name,
             module_name="config",
@@ -301,21 +303,16 @@ def test_tasks_configs(evaluation_results: Tuple[ParseConfig, Dict]):
 
     for task_name, task_configs in config.tasks.items():
         results = all_results[task_name]
-
-        # If configs has more than one key - process as multitask
         is_multitask = len(results["configs"]) > 1
-        if is_multitask:
-            # Filter out to only the subtasks of the current task
-            subtasks_configs = filter_dict(task_configs.to_dict(), task_name)
-        else:
-            # Exclude keys that are not present in the evaluation output
-            expected_task_dict = task_configs.to_dict().copy()
-            expected_task_dict.pop("limit")
-            subtasks_configs = {task_name: expected_task_dict}
+        subtasks_configs = (
+            filter_dict(task_configs.to_dict(), task_name)
+            if is_multitask
+            else {task_name: {k: v for k, v in task_configs.items() if k != "limit"}}
+        )
 
         for subtask_name, subtask_config in subtasks_configs.items():
             compare_results(
-                target=subtask_config,
+                reference=subtask_config,
                 observed=results["configs"][subtask_name],
                 config_name=config.params.name,
                 module_name=subtask_name,
@@ -342,15 +339,14 @@ def test_tasks_results(evaluation_results: Tuple[ParseConfig, Dict]):
 
     for task_name, expected_results in config.results.items():
         results = all_results[task_name]
-
-        is_multitask = len(results["results"].keys()) > 1
-        if is_multitask:
-            observed_results = results["results"]
-        else:
-            observed_results = results["results"][task_name]
+        observed_results = (
+            results["results"]
+            if len(results["results"]) > 1
+            else results["results"][task_name]
+        )
 
         compare_results(
-            target=expected_results.to_dict(),
+            reference=expected_results.to_dict(),
             observed=observed_results,
             config_name=config.params.name,
             module_name=task_name,
@@ -377,15 +373,14 @@ def test_tasks_n_samples(evaluation_results: Tuple[ParseConfig, Dict]):
 
     for task_name, expected_n_samples in config.n_samples.items():
         results = all_results[task_name]
-
-        is_multitask = len(results["n-samples"].keys()) > 1
-        if is_multitask:
-            observed_n_samples = results["n-samples"]
-        else:
-            observed_n_samples = results["n-samples"][task_name]
+        observed_n_samples = (
+            results["n-samples"]
+            if len(results["n-samples"]) > 1
+            else results["n-samples"][task_name]
+        )
 
         compare_results(
-            target=expected_n_samples.to_dict(),
+            reference=expected_n_samples.to_dict(),
             observed=observed_n_samples,
             config_name=config.params.name,
             module_name=task_name,
@@ -416,11 +411,11 @@ def test_tasks_hashes(evaluation_results: Tuple[ParseConfig, Dict]):
 
     for task_name, expected_hashes in config.task_hashes.items():
         results = all_results[task_name]
-
         is_multitask = len(results["configs"].keys()) > 1
+
         if is_multitask:
             compare_results(
-                target=expected_hashes.to_dict(),
+                reference=expected_hashes.to_dict(),
                 observed=results["task_hashes"],
                 config_name=config.params.name,
                 module_name=task_name,
@@ -457,11 +452,11 @@ def test_tasks_versions(evaluation_results: Tuple[ParseConfig, Dict]):
 
     for task_name, expected_versions in config.versions.items():
         results = all_results[task_name]
-
         is_multitask = len(results["versions"].keys()) > 1
+
         if is_multitask:
             compare_results(
-                target=expected_versions.to_dict(),
+                reference=expected_versions.to_dict(),
                 observed=results["versions"],
                 config_name=config.params.name,
                 module_name=task_name,

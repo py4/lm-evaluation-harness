@@ -9,8 +9,8 @@
         "model_num_parameters": 3821079552,
         "model_revision": "main",
         "model_sha": "c1358f8a35e6d2af81890deffbbfa575b978c62f",
-        "batch_size": 1,
-        "max_batch_size": 1,
+        "batch_size": 10,
+        "max_batch_size": 10,
         "device": "gpu",
         "use_cache": null,
         "write_out": false,
@@ -52,7 +52,6 @@
             "num_fewshot": 0,
             "leaderboard_bbh_boolean_expressions": {
                 "task": "leaderboard_bbh_boolean_expressions",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "boolean_expressions",
                 "test_split": "test",
@@ -97,7 +96,6 @@
             },
             "leaderboard_bbh_causal_judgement": {
                 "task": "leaderboard_bbh_causal_judgement",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "causal_judgement",
                 "test_split": "test",
@@ -143,7 +141,6 @@
             },
             "leaderboard_bbh_date_understanding": {
                 "task": "leaderboard_bbh_date_understanding",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "date_understanding",
                 "test_split": "test",
@@ -192,7 +189,6 @@
             },
             "leaderboard_bbh_disambiguation_qa": {
                 "task": "leaderboard_bbh_disambiguation_qa",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "disambiguation_qa",
                 "test_split": "test",
@@ -238,7 +234,6 @@
             },
             "leaderboard_bbh_formal_fallacies": {
                 "task": "leaderboard_bbh_formal_fallacies",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "formal_fallacies",
                 "test_split": "test",
@@ -283,7 +278,6 @@
             },
             "leaderboard_bbh_geometric_shapes": {
                 "task": "leaderboard_bbh_geometric_shapes",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "geometric_shapes",
                 "test_split": "test",
@@ -337,7 +331,6 @@
             },
             "leaderboard_bbh_hyperbaton": {
                 "task": "leaderboard_bbh_hyperbaton",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "hyperbaton",
                 "test_split": "test",
@@ -382,7 +375,6 @@
             },
             "leaderboard_bbh_logical_deduction_five_objects": {
                 "task": "leaderboard_bbh_logical_deduction_five_objects",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "logical_deduction_five_objects",
                 "test_split": "test",
@@ -430,7 +422,6 @@
             },
             "leaderboard_bbh_logical_deduction_seven_objects": {
                 "task": "leaderboard_bbh_logical_deduction_seven_objects",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "logical_deduction_seven_objects",
                 "test_split": "test",
@@ -480,7 +471,6 @@
             },
             "leaderboard_bbh_logical_deduction_three_objects": {
                 "task": "leaderboard_bbh_logical_deduction_three_objects",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "logical_deduction_three_objects",
                 "test_split": "test",
@@ -526,7 +516,6 @@
             },
             "leaderboard_bbh_movie_recommendation": {
                 "task": "leaderboard_bbh_movie_recommendation",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "movie_recommendation",
                 "test_split": "test",
@@ -575,7 +564,6 @@
             },
             "leaderboard_bbh_navigate": {
                 "task": "leaderboard_bbh_navigate",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "navigate",
                 "test_split": "test",
@@ -620,7 +608,6 @@
             },
             "leaderboard_bbh_object_counting": {
                 "task": "leaderboard_bbh_object_counting",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "object_counting",
                 "test_split": "test",
@@ -682,7 +669,6 @@
             },
             "leaderboard_bbh_penguins_in_a_table": {
                 "task": "leaderboard_bbh_penguins_in_a_table",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "penguins_in_a_table",
                 "test_split": "test",
@@ -730,7 +716,6 @@
             },
             "leaderboard_bbh_reasoning_about_colored_objects": {
                 "task": "leaderboard_bbh_reasoning_about_colored_objects",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "reasoning_about_colored_objects",
                 "test_split": "test",
@@ -791,7 +776,6 @@
             },
             "leaderboard_bbh_ruin_names": {
                 "task": "leaderboard_bbh_ruin_names",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "ruin_names",
                 "test_split": "test",
@@ -840,7 +824,6 @@
             },
             "leaderboard_bbh_salient_translation_error_detection": {
                 "task": "leaderboard_bbh_salient_translation_error_detection",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "salient_translation_error_detection",
                 "test_split": "test",
@@ -889,7 +872,6 @@
             },
             "leaderboard_bbh_snarks": {
                 "task": "leaderboard_bbh_snarks",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "snarks",
                 "test_split": "test",
@@ -934,7 +916,6 @@
             },
             "leaderboard_bbh_sports_understanding": {
                 "task": "leaderboard_bbh_sports_understanding",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "sports_understanding",
                 "test_split": "test",
@@ -979,7 +960,6 @@
             },
             "leaderboard_bbh_temporal_sequences": {
                 "task": "leaderboard_bbh_temporal_sequences",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "temporal_sequences",
                 "test_split": "test",
@@ -1026,7 +1006,6 @@
             },
             "leaderboard_bbh_tracking_shuffled_objects_five_objects": {
                 "task": "leaderboard_bbh_tracking_shuffled_objects_five_objects",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "tracking_shuffled_objects_five_objects",
                 "test_split": "test",
@@ -1074,7 +1053,6 @@
             },
             "leaderboard_bbh_tracking_shuffled_objects_seven_objects": {
                 "task": "leaderboard_bbh_tracking_shuffled_objects_seven_objects",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "tracking_shuffled_objects_seven_objects",
                 "test_split": "test",
@@ -1124,7 +1102,6 @@
             },
             "leaderboard_bbh_tracking_shuffled_objects_three_objects": {
                 "task": "leaderboard_bbh_tracking_shuffled_objects_three_objects",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "tracking_shuffled_objects_three_objects",
                 "test_split": "test",
@@ -1170,7 +1147,6 @@
             },
             "leaderboard_bbh_web_of_lies": {
                 "task": "leaderboard_bbh_web_of_lies",
-                "group": "leaderboard_bbh",
                 "dataset_path": "SaylorTwift/bbh",
                 "dataset_name": "web_of_lies",
                 "test_split": "test",
@@ -1219,7 +1195,6 @@
             "num_fewshot": 0,
             "leaderboard_gpqa_diamond": {
                 "task": "leaderboard_gpqa_diamond",
-                "group": "leaderboard_gpqa",
                 "dataset_path": "Idavidrein/gpqa",
                 "dataset_name": "gpqa_diamond",
                 "training_split": "train",
@@ -1254,7 +1229,6 @@
             },
             "leaderboard_gpqa_extended": {
                 "task": "leaderboard_gpqa_extended",
-                "group": "leaderboard_gpqa",
                 "dataset_path": "Idavidrein/gpqa",
                 "dataset_name": "gpqa_extended",
                 "training_split": "train",
@@ -1289,7 +1263,6 @@
             },
             "leaderboard_gpqa_main": {
                 "task": "leaderboard_gpqa_main",
-                "group": "leaderboard_gpqa",
                 "dataset_path": "Idavidrein/gpqa",
                 "dataset_name": "gpqa_main",
                 "training_split": "train",
@@ -1328,7 +1301,6 @@
             "num_fewshot": 0,
             "leaderboard_ifeval": {
                 "task": "leaderboard_ifeval",
-                "group": "leaderboard_instruction_following",
                 "dataset_path": "wis-k/instruction-following-eval",
                 "test_split": "train",
                 "doc_to_text": "prompt",
@@ -1382,9 +1354,6 @@
             "num_fewshot": 0,
             "leaderboard_musr_murder_mysteries": {
                 "task": "leaderboard_musr_murder_mysteries",
-                "group": [
-                    "leaderboard_musr"
-                ],
                 "dataset_path": "TAUR-Lab/MuSR",
                 "test_split": "murder_mysteries",
                 "doc_to_text": "def doc_to_text(doc):\n    \"\"\"\n    Convert a doc to text.\n    \"\"\"\n    choices = \"\"\n    for i, choice in enumerate(ast.literal_eval(doc[\"choices\"])):\n        choices += f\"{i+1} - {choice}\\n\"\n\n    text = DOC_TO_TEXT.format(\n        narrative=doc[\"narrative\"], question=doc[\"question\"], choices=choices\n    )\n\n    return text\n",
@@ -1408,9 +1377,6 @@
             },
             "leaderboard_musr_object_placements": {
                 "task": "leaderboard_musr_object_placements",
-                "group": [
-                    "leaderboard_musr"
-                ],
                 "dataset_path": "TAUR-Lab/MuSR",
                 "test_split": "object_placements",
                 "doc_to_text": "def doc_to_text(doc):\n    \"\"\"\n    Convert a doc to text.\n    \"\"\"\n    choices = \"\"\n    for i, choice in enumerate(ast.literal_eval(doc[\"choices\"])):\n        choices += f\"{i+1} - {choice}\\n\"\n\n    text = DOC_TO_TEXT.format(\n        narrative=doc[\"narrative\"], question=doc[\"question\"], choices=choices\n    )\n\n    return text\n",
@@ -1434,9 +1400,6 @@
             },
             "leaderboard_musr_team_allocation": {
                 "task": "leaderboard_musr_team_allocation",
-                "group": [
-                    "leaderboard_musr"
-                ],
                 "dataset_path": "TAUR-Lab/MuSR",
                 "test_split": "team_allocation",
                 "doc_to_text": "def doc_to_text(doc):\n    \"\"\"\n    Convert a doc to text.\n    \"\"\"\n    choices = \"\"\n    for i, choice in enumerate(ast.literal_eval(doc[\"choices\"])):\n        choices += f\"{i+1} - {choice}\\n\"\n\n    text = DOC_TO_TEXT.format(\n        narrative=doc[\"narrative\"], question=doc[\"question\"], choices=choices\n    )\n\n    return text\n",

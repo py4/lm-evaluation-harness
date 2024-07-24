@@ -1,9 +1,9 @@
 import json
 import os
-from typing import Dict, List, Optional
+from typing import Any, Dict, Iterator, List, Optional
 
 
-def filter_dict(d, key) -> Dict:
+def filter_dict(d: Dict[str, Any], key: str) -> Dict[str, Any]:
     """
     Filter a dictionary to include only the keys that contain the specified substring.
 
@@ -68,34 +68,31 @@ class ParseConfig:
             else:
                 setattr(self, key, value)
 
-    def __getattr__(self, name):
+    def __getattr__(self, name) -> Any:
+        """Get the value of the attribute from the ParseConfig object."""
         raise AttributeError(f"Attribute '{name}' is not defined in the config file.")
 
-    def __getitem__(self, key):
-        """
-        Get the value of the key from the config file.
-        """
+    def __getitem__(self, key) -> Any:
+        """Get the value of the key from the ParseConfig object."""
         return self.__dict__[key]
 
-    def to_dict(self):
-        """
-        Convert the ParseConfig object back into a dictionary.
-        """
+    def __repr__(self) -> str:
+        """Return the string representation of the ParseConfig object."""
+        return f"ParseConfig({self.__dict__})"
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert the ParseConfig object back into a dictionary."""
         return self.__dict__
 
-    def keys(self):
-        """
-        Return the keys of the configuration object.
-        """
+    def keys(self) -> Iterator:
+        """Return the keys of the ParseConfig object."""
         if hasattr(self, "__dict__"):
             return self.__dict__.keys()
         else:
             raise TypeError("Object is not a dictionary.")
 
-    def items(self):
-        """
-        Return an iterator of the configuration object's items.
-        """
+    def items(self) -> Iterator:
+        """Return an iterator of the ParseConfig object's items."""
         if hasattr(self, "__dict__"):
             return iter(self.__dict__.items())
         else:
