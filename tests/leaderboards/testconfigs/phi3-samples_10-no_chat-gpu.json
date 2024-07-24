@@ -1,7 +1,7 @@
 {
     "params": {
         "name": "Phi-3-mini - 10 samples - no chat template",
-        "output_path": "tests_results/phi3_10samples_nochat/",
+        "evaluation_tracker_args": "output_path=tests_results/phi3_10samples_no_chat/",
         "system_instruction": null,
         "chat_template": null,
         "model": "hf",
@@ -1734,7 +1734,7 @@
             "leaderboard_musr_team_allocation": 1.0
         }
     },
-    "transformers_version": "4.41.1",
+    "transformers_version": "4.42.3",
     "system_instruction_sha": null,
     "chat_template_sha": null,
     "max_length": 4096,

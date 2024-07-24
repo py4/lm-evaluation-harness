@@ -1,7 +1,7 @@
 {
     "params": {
         "name": "Phi-3-mini - 10 samples - chat template",
-        "output_path": "tests_results/phi3_10samples_nochat/",
+        "evaluation_tracker_args": "output_path=tests_results/phi3_10samples_chat/",
         "system_instruction": null,
         "chat_template": true,
         "model": "hf",
@@ -21,10 +21,9 @@
         "gen_kwargs": null,
         "verbosity": "INFO",
         "predict_only": false,
-        "default_seed_string": "0,1234,1234,1234",
+        "random_seed": 0,
         "fewshot_seed": 1234,
         "numpy_seed": 1234,
-        "random_seed": 0,
         "torch_seed": 1234
     },
     "tasks": {
@@ -1382,9 +1381,6 @@
             "num_fewshot": 0,
             "leaderboard_musr_murder_mysteries": {
                 "task": "leaderboard_musr_murder_mysteries",
-                "group": [
-                    "leaderboard_musr"
-                ],
                 "dataset_path": "TAUR-Lab/MuSR",
                 "test_split": "murder_mysteries",
                 "doc_to_text": "def doc_to_text(doc):\n    \"\"\"\n    Convert a doc to text.\n    \"\"\"\n    choices = \"\"\n    for i, choice in enumerate(ast.literal_eval(doc[\"choices\"])):\n        choices += f\"{i+1} - {choice}\\n\"\n\n    text = DOC_TO_TEXT.format(\n        narrative=doc[\"narrative\"], question=doc[\"question\"], choices=choices\n    )\n\n    return text\n",
@@ -1408,9 +1404,6 @@
             },
             "leaderboard_musr_object_placements": {
                 "task": "leaderboard_musr_object_placements",
-                "group": [
-                    "leaderboard_musr"
-                ],
                 "dataset_path": "TAUR-Lab/MuSR",
                 "test_split": "object_placements",
                 "doc_to_text": "def doc_to_text(doc):\n    \"\"\"\n    Convert a doc to text.\n    \"\"\"\n    choices = \"\"\n    for i, choice in enumerate(ast.literal_eval(doc[\"choices\"])):\n        choices += f\"{i+1} - {choice}\\n\"\n\n    text = DOC_TO_TEXT.format(\n        narrative=doc[\"narrative\"], question=doc[\"question\"], choices=choices\n    )\n\n    return text\n",
@@ -1434,9 +1427,6 @@
             },
             "leaderboard_musr_team_allocation": {
                 "task": "leaderboard_musr_team_allocation",
-                "group": [
-                    "leaderboard_musr"
-                ],
                 "dataset_path": "TAUR-Lab/MuSR",
                 "test_split": "team_allocation",
                 "doc_to_text": "def doc_to_text(doc):\n    \"\"\"\n    Convert a doc to text.\n    \"\"\"\n    choices = \"\"\n    for i, choice in enumerate(ast.literal_eval(doc[\"choices\"])):\n        choices += f\"{i+1} - {choice}\\n\"\n\n    text = DOC_TO_TEXT.format(\n        narrative=doc[\"narrative\"], question=doc[\"question\"], choices=choices\n    )\n\n    return text\n",
@@ -1764,10 +1754,6 @@
             "acc_stderr,none": 0.16329931618554522
         },
         "leaderboard_bbh": {
-            "leaderboard_bbh": {
-                "acc_norm,none": 0.5416666666666666,
-                "acc_norm_stderr,none": "N/A"
-            },
             "leaderboard_bbh_boolean_expressions": {
                 "acc_norm,none": 1.0,
                 "acc_norm_stderr,none": "N/A"
@@ -1866,10 +1852,6 @@
             }
         },
         "leaderboard_gpqa": {
-            "leaderboard_gpqa": {
-                "acc_norm,none": 0.0,
-                "acc_norm_stderr,none": "N/A"
-            },
             "leaderboard_gpqa_diamond": {
                 "acc_norm,none": 0.0,
                 "acc_norm_stderr,none": "N/A"
@@ -1894,10 +1876,6 @@
             "prompt_level_strict_acc_stderr,none": 0.13333333333333333
         },
         "leaderboard_musr": {
-            "leaderboard_musr": {
-                "acc_norm,none": 0.43333333333333335,
-                "acc_norm_stderr,none": 0.08958064164776165
-            },
             "leaderboard_musr_murder_mysteries": {
                 "acc_norm,none": 0.6,
                 "acc_norm_stderr,none": 0.1632993161855452
@@ -1921,10 +1899,6 @@
                 "exact_match_stderr,none": "N/A"
             },
             "leaderboard_math_geometry_hard": {
-                "exact_match,none": 0.0,
-                "exact_match_stderr,none": "N/A"
-            },
-            "leaderboard_math_hard": {
                 "exact_match,none": 0.0,
                 "exact_match_stderr,none": "N/A"
             },
@@ -2114,7 +2088,7 @@
             "leaderboard_math_precalculus_hard": 1.0
         }
     },
-    "transformers_version": "4.43.0.dev0",
+    "transformers_version": "4.42.3",
     "system_instruction_sha": null,
     "chat_template_sha": null,
     "max_length": 4096,

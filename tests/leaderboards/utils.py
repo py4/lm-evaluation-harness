@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 def filter_dict(d, key) -> Dict:
@@ -26,7 +26,7 @@ class ParseConfig:
     recursively converting them into `ParseConfig` objects.
 
     Attributes:
-        dict_obj (dict): The dictionary object to parse.
+        dict_obj (Dict): The dictionary object to parse.
 
     Example:
         config_dict = {
@@ -51,7 +51,7 @@ class ParseConfig:
         Initialize the ParseConfig object with the given dictionary object.
 
         Args:
-            dict_obj (dict): The dictionary object to parse.
+            dict_obj (Dict): The dictionary object to parse.
         """
         for key, value in dict_obj.items():
             if isinstance(value, dict):
@@ -102,21 +102,20 @@ class ParseConfig:
             raise TypeError("Object is not a dictionary.")
 
 
-def load_all_configs(device: str) -> List[Dict]:
+def load_all_configs(device: Optional[str] = None) -> List[Dict]:
     """
     Load all configuration files that include the specified device in their name.
 
     This function reads configuration files from the 'tests/leaderboards/testconfigs' directory.
-    It filters the files to include only those that match the given device (e.g., 'cpu' or 'gpu').
+    It filters the files to include only those that match the given device (e.g., "cpu" or "gpu").
 
     Args:
-        device (str): The device type to filter configuration files by. Valid options are 'cpu' or 'gpu'.
-                      If None, the default is 'cpu'.
+        device (Optional[str]): The device to filter the configuration files by.
+            Valid values are "cpu" or "gpu". If None, defaults to "cpu".
 
     Returns:
         List[Dict]: A list of dictionaries containing the configuration data from the files.
     """
-
     if device is None:
         device = "cpu"
 

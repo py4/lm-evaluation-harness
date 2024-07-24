@@ -1,6 +1,6 @@
 import os
 from dataclasses import asdict
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 import pytest
 
@@ -38,14 +38,17 @@ def update_results(results: Dict, evaluation_tracker: EvaluationTracker) -> Dict
     """
     samples = results.get("samples")
     evaluation_tracker.general_config_tracker.log_end_time()
+
     task_hashes = {}
-    if samples:
-        for task_name, task_samples in samples.items():
-            sample_hashes = [
+    for task_name, task_samples in samples.items():
+        sample_hashes = hash_string(
+            "".join(
                 s["doc_hash"] + s["prompt_hash"] + s["target_hash"]
                 for s in task_samples
-            ]
-            task_hashes[task_name] = hash_string("".join(sample_hashes))
+            )
+        )
+        task_hashes[task_name] = sample_hashes
+
     # update initial results dict with the evaluation tracker data
     results.update({"task_hashes": task_hashes})
     results.update(asdict(evaluation_tracker.general_config_tracker))
@@ -60,17 +63,17 @@ def compare_results(
     recursive: bool = False,
 ):
     """
-    Compare values in the target and observed ParseConfig/dictionaries,
+    Compare values in the target and observed dictionaries,
     checking for equality or approximate equality for floats.
     Compare complex nested structures (e.g., dictionaries or lists) only if `recursive` is set to True.
     Raise an error if a key from the target object is not present in the observed object.
 
     Args:
-        target: The target ParseConfig or dictionary to compare with.
-        observed: The observed dictionary to compare.
-        config_name: The name of the config to display in the error message.
-        module_name: The associated name of the subresults to display in the error message.
-        recursive: Whether to compare nested structures.
+        target (Dict[str, Any]): The target ParseConfig or dictionary to compare with.
+        observed (Dict[str, Any]): The observed dictionary to compare.
+        config_name (str): The name of the config to display in the error message.
+        module_name (str): The associated name of the subresults to display in the error message.
+        recursive (bool): Whether to compare nested structures.
 
     Example:
         target = {
@@ -83,11 +86,12 @@ def compare_results(
             "system_instruction_sha": None,
             "versions": {"drop": 3.0}  # Nested structure, compared only if recursive is set to True
         }
+        compare_results(target, observed, "example_config", "example_module")
     """
     if not target:
         raise ValueError("Target results are empty.")
-    for key in target.keys():
-        target_val = target[key]
+
+    for key, target_val in target.items():
         # compare nested objects only if recursive is set to True
         if isinstance(target_val, ParseConfig):
             if recursive:
@@ -120,7 +124,7 @@ def load_config(request):
 
     Use the `load_all_configs` function to retrieve configurations based on
     the device specified in the `TESTS_DEVICE` environment variable. If the variable is
-    not set, it defaults to 'cpu'.
+    not set, it defaults to "cpu".
 
     Args:
         request: Pytest request object containing the parameter from the fixture decoration.
@@ -134,7 +138,7 @@ def load_config(request):
 
 
 @pytest.fixture(scope="module")
-def evaluation_results(load_config):
+def evaluation_results(load_config: Dict) -> Tuple[ParseConfig, Dict]:
     """
     Pytest fixture that runs evaluations for all loaded configurations and returns the results.
 
@@ -144,22 +148,19 @@ def evaluation_results(load_config):
     and few-shot examples for each task.
 
     Args:
-        load_config (dict): A dictionary containing evaluation configurations and expected results.
+        load_config (Dict): A dictionary containing evaluation configurations and expected results.
 
     Returns:
         Tuple[ParseConfig, Dict]: A tuple containing:
-            - config (ParseConfig): The parsed configuration object.
+            - config (ParseConfig): The parsed configuration with the expected results.
             - all_results (Dict): A dictionary containing the evaluation results for each task.
     """
     config = ParseConfig(load_config)
-
     evaluation_tracker_args = simple_parse_args_string(
-        f"output_path={config.params.output_path}"
+        config.params.evaluation_tracker_args
     )
     evaluation_tracker = EvaluationTracker(**evaluation_tracker_args)
-
     task_manager = TaskManager(config.params.verbosity, include_path=None)
-    seed = [0, 1234, 1234, 1234]
     request_caching_args = request_caching_arg_to_dict(cache_requests=None)
 
     all_results = {}
@@ -173,7 +174,7 @@ def evaluation_results(load_config):
             max_batch_size=config.params.max_batch_size,
             device=config.params.device,
             use_cache=config.params.use_cache,
-            limit=task.limit,  # limit is varying depending on the task
+            limit=task.limit,
             check_integrity=config.params.check_integrity,
             write_out=config.params.write_out,
             log_samples=config.params.log_samples,
@@ -185,10 +186,10 @@ def evaluation_results(load_config):
             task_manager=task_manager,
             verbosity=config.params.verbosity,
             predict_only=config.params.predict_only,
-            random_seed=seed[0],
-            numpy_random_seed=seed[1],
-            torch_random_seed=seed[2],
-            fewshot_random_seed=seed[3],
+            random_seed=config.params.random_seed,
+            numpy_random_seed=config.params.numpy_seed,
+            torch_random_seed=config.params.torch_seed,
+            fewshot_random_seed=config.params.fewshot_seed,
             **request_caching_args,
         )
         results = update_results(results, evaluation_tracker)
@@ -197,7 +198,7 @@ def evaluation_results(load_config):
     return config, all_results
 
 
-def test_general_output(evaluation_results: Dict):
+def test_general_output(evaluation_results: Tuple[ParseConfig, Dict]):
     """
     Compare the general output of the evaluation results against the expected results.
 
@@ -215,6 +216,7 @@ def test_general_output(evaluation_results: Dict):
         - "eot_token_id": 32000
     """
     config, all_results = evaluation_results
+
     for task_name in config.tasks.keys():
         results = all_results[task_name]
         compare_results(
@@ -226,7 +228,7 @@ def test_general_output(evaluation_results: Dict):
         )
 
 
-def test_evaluation_config(evaluation_results: Dict):
+def test_evaluation_config(evaluation_results: Tuple[ParseConfig, Dict]):
     """
     Compare the provided evaluation configuration against the observed configuration.
 
@@ -243,12 +245,12 @@ def test_evaluation_config(evaluation_results: Dict):
         - "model_revision": "main"
         - max_batch_size": 1
     """
-
     config, all_results = evaluation_results
+
     # Parameters to exclude from comparison as they are not present in the evaluation output
     # These parameters are only used to set up the evaluation
     excluded_params = [
-        "output_path",
+        "evaluation_tracker_args",
         "system_instruction",
         "chat_template",
         "max_batch_size",
@@ -259,9 +261,8 @@ def test_evaluation_config(evaluation_results: Dict):
         "fewshot_as_multiturn",
         "verbosity",
         "predict_only",
-        "default_seed_string",
     ]
-    # Prepare the expected configuration dictionary, for each task it should be the same
+    # Prepare the expected configuration dictionary, it's task independent
     expected_config = {
         k: v for k, v in config.params.items() if k not in excluded_params
     }
@@ -278,7 +279,7 @@ def test_evaluation_config(evaluation_results: Dict):
         )
 
 
-def test_tasks_configs(evaluation_results: Dict):
+def test_tasks_configs(evaluation_results: Tuple[ParseConfig, Dict]):
     """
     Compare the task configurations against the observed task configurations.
 
@@ -291,13 +292,13 @@ def test_tasks_configs(evaluation_results: Dict):
         evaluation_results (Tuple[ParseConfig, Dict]): A tuple containing the evaluation configuration
         and the results for all tasks evaluated.
 
-    Examples of keys and values compared in this test:
+    Examples of configuration structure compared in this test:
         - "fewshot_delimiter": "\n\n"
         - "num_fewshot": 0
         - "output_type": "generate_until"
     """
-
     config, all_results = evaluation_results
+
     for task_name, task_configs in config.tasks.items():
         results = all_results[task_name]
 
@@ -322,7 +323,7 @@ def test_tasks_configs(evaluation_results: Dict):
             )
 
 
-def test_tasks_results(evaluation_results: Dict):
+def test_tasks_results(evaluation_results: Tuple[ParseConfig, Dict]):
     """
     Compares the expected metrics values against the observed results for each task.
 
@@ -333,7 +334,7 @@ def test_tasks_results(evaluation_results: Dict):
         evaluation_results (Tuple[ParseConfig, Dict]): A tuple containing the evaluation configuration
         and the results for all tasks evaluated.
 
-    Examples of keys and values compared in this test:
+    Examples of results structure compared in this test:
         - "exact_match,none": 0.0
         - "exact_match_stderr,none": "N/A"
     """
@@ -357,7 +358,7 @@ def test_tasks_results(evaluation_results: Dict):
         )
 
 
-def test_tasks_n_samples(evaluation_results: Dict):
+def test_tasks_n_samples(evaluation_results: Tuple[ParseConfig, Dict]):
     """
     Compares n_samples for each task and subtask.
 
@@ -369,10 +370,9 @@ def test_tasks_n_samples(evaluation_results: Dict):
         evaluation_results (Tuple[ParseConfig, Dict]): A tuple containing the evaluation configuration
         and the results for all tasks evaluated.
 
-    Examples of keys and values compared in this test:
+    Example of n samples structure compared in this test:
         - "leaderboard_mmlu_pro": {"effective": 10, "original": 11873},
     """
-
     config, all_results = evaluation_results
 
     for task_name, expected_n_samples in config.n_samples.items():
@@ -393,7 +393,7 @@ def test_tasks_n_samples(evaluation_results: Dict):
         )
 
 
-def test_tasks_hashes(evaluation_results: Dict):
+def test_tasks_hashes(evaluation_results: Tuple[ParseConfig, Dict]):
     """
     Compares task hashes for each task and subtask.
 
@@ -405,7 +405,7 @@ def test_tasks_hashes(evaluation_results: Dict):
         evaluation_results (Tuple[ParseConfig, Dict]): A tuple containing the evaluation configuration
         and the results for all tasks evaluated.
 
-    Examples of keys and values compared in this test:
+    Examples of hashes structure compared in this test:
         - "leaderboard_gpqa": {
             "leaderboard_gpqa_diamond": "712e6d48eb8ef734cae32ac77163da1de61367f7a37cbb160592e5dd79629b14",
             "leaderboard_gpqa_extended": "f21cf1ce376bafcf42a5850189636241ab89839910e2ee7b22a7a3b13d6afd3b",
@@ -434,7 +434,7 @@ def test_tasks_hashes(evaluation_results: Dict):
             )
 
 
-def test_tasks_versions(evaluation_results: Dict):
+def test_tasks_versions(evaluation_results: Tuple[ParseConfig, Dict]):
     """
     Compares versions for each task and subtask.
 
@@ -446,7 +446,7 @@ def test_tasks_versions(evaluation_results: Dict):
         evaluation_results (Tuple[ParseConfig, Dict]): A tuple containing the evaluation configuration
         and the results for all tasks evaluated.
 
-    Examples of keys and values compared in this test:
+    Examples of versions structure compared in this test:
         - "leaderboard_gpqa": {
             "leaderboard_gpqa_diamond": 1.0,
             "leaderboard_gpqa_extended": 1.0,
@@ -454,6 +454,7 @@ def test_tasks_versions(evaluation_results: Dict):
           }
     """
     config, all_results = evaluation_results
+
     for task_name, expected_versions in config.versions.items():
         results = all_results[task_name]
 
