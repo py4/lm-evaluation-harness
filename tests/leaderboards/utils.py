@@ -17,13 +17,13 @@ def filter_dict(d: Dict[str, Any], key: str) -> Dict[str, Any]:
     return {k: v for k, v in d.items() if key in k}
 
 
-class ParseConfig:
+class ConfigParser:
     """
     A class to parse a dictionary object into an attribute-based object.
 
-    The `ParseConfig` class allows accessing dictionary keys as attributes and
+    The `ConfigParser` class allows accessing dictionary keys as attributes and
     is designed to be used with dictionaries. It supports nested dictionaries and lists,
-    recursively converting them into `ParseConfig` objects.
+    recursively converting them into `ConfigParser` objects.
 
     Attributes:
         dict_obj (Dict): The dictionary object to parse.
@@ -37,7 +37,7 @@ class ParseConfig:
             },
         }
 
-        config = ParseConfig(config_dict)
+        config = ConfigParser(config_dict)
 
         # Accessing attributes
         print(config.transformers_version)
@@ -48,20 +48,20 @@ class ParseConfig:
 
     def __init__(self, dict_obj):
         """
-        Initialize the ParseConfig object with the given dictionary object.
+        Initialize the ConfigParser object with the given dictionary object.
 
         Args:
             dict_obj (Dict): The dictionary object to parse.
         """
         for key, value in dict_obj.items():
             if isinstance(value, dict):
-                setattr(self, key, ParseConfig(value))
+                setattr(self, key, ConfigParser(value))
             elif isinstance(value, list):
                 setattr(
                     self,
                     key,
                     [
-                        ParseConfig(item) if isinstance(item, dict) else item
+                        ConfigParser(item) if isinstance(item, dict) else item
                         for item in value
                     ],
                 )
@@ -69,30 +69,30 @@ class ParseConfig:
                 setattr(self, key, value)
 
     def __getattr__(self, name) -> Any:
-        """Get the value of the attribute from the ParseConfig object."""
+        """Get the value of the attribute from the ConfigParser object."""
         raise AttributeError(f"Attribute '{name}' is not defined in the config file.")
 
     def __getitem__(self, key) -> Any:
-        """Get the value of the key from the ParseConfig object."""
+        """Get the value of the key from the ConfigParser object."""
         return self.__dict__[key]
 
     def __repr__(self) -> str:
-        """Return the string representation of the ParseConfig object."""
-        return f"ParseConfig({self.__dict__})"
+        """Return the string representation of the ConfigParser object."""
+        return f"ConfigParser({self.__dict__})"
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert the ParseConfig object back into a dictionary."""
+        """Convert the ConfigParser object back into a dictionary."""
         return self.__dict__
 
     def keys(self) -> Iterator:
-        """Return the keys of the ParseConfig object."""
+        """Return the keys of the ConfigParser object."""
         if hasattr(self, "__dict__"):
             return self.__dict__.keys()
         else:
             raise TypeError("Object is not a dictionary.")
 
     def items(self) -> Iterator:
-        """Return an iterator of the ParseConfig object's items."""
+        """Return an iterator of the ConfigParser object's items."""
         if hasattr(self, "__dict__"):
             return iter(self.__dict__.items())
         else:
