@@ -81,8 +81,17 @@ class ConfigParser:
         return f"ConfigParser({self.__dict__})"
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert the ConfigParser object back into a dictionary."""
-        return self.__dict__
+        """Convert the ConfigParser object with nested objects into a dictionary."""
+
+        def _convert_to_dict(obj):
+            if isinstance(obj, ConfigParser):
+                return {key: _convert_to_dict(value) for key, value in obj.items()}
+            elif isinstance(obj, list):
+                return [_convert_to_dict(item) for item in obj]
+            else:
+                return obj
+
+        return _convert_to_dict(self)
 
     def keys(self) -> Iterator:
         """Return the keys of the ConfigParser object."""

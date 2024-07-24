@@ -89,13 +89,12 @@ def compare_results(
         raise ValueError("Reference dictionary is empty.")
 
     for key, reference_val in reference.items():
-        assert key in observed, (
-            f"Config: '{config_name} - {module_name}' failed. "
-            f"Key '{key}' is missing in the observed dictionary."
-        )
-
         if isinstance(reference_val, Dict):
             if recursive:
+                assert key in observed, (
+                    f"Config: '{config_name} - {module_name}' failed. "
+                    f"Key '{key}' is missing in the observed dictionary."
+                )
                 compare_results(
                     reference_val, observed[key], config_name, key, recursive
                 )
@@ -103,6 +102,10 @@ def compare_results(
             else:
                 continue
 
+        assert key in observed, (
+            f"Config: '{config_name} - {module_name}' failed. "
+            f"Key '{key}' is missing in the observed dictionary."
+        )
         observed_val = observed[key]
         if isinstance(reference_val, float):
             assert reference_val == pytest.approx(observed_val, abs=1e-4), (
@@ -301,7 +304,11 @@ def test_tasks_configs(evaluation_results: Tuple[ConfigParser, Dict]):
         subtasks_configs = (
             filter_dict(task_configs.to_dict(), task_name)
             if is_multitask
-            else {task_name: {k: v for k, v in task_configs.items() if k != "limit"}}
+            else {
+                task_name: {
+                    k: v for k, v in task_configs.to_dict().items() if k != "limit"
+                }
+            }
         )
 
         for subtask_name, subtask_config in subtasks_configs.items():
