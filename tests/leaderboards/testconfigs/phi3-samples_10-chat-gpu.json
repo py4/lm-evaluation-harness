@@ -2038,7 +2038,7 @@
             "leaderboard_math_precalculus_hard": 1.0
         }
     },
-    "transformers_version": "4.42.3",
+    "transformers_version": "4.43.0.dev0",
     "system_instruction_sha": null,
     "chat_template_sha": null,
     "max_length": 4096,
