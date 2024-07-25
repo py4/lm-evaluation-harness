@@ -5,7 +5,6 @@ from typing import Any, Dict, Tuple
 import pytest
 
 from lm_eval import evaluator
-from lm_eval.evaluator import request_caching_arg_to_dict
 from lm_eval.loggers import EvaluationTracker
 from lm_eval.tasks import TaskManager
 from lm_eval.utils import hash_string
@@ -160,7 +159,6 @@ def evaluation_results(load_config: Dict) -> Tuple[ConfigParser, Dict]:
     config = ConfigParser(load_config)
     evaluation_tracker = EvaluationTracker()
     task_manager = TaskManager(config.params.verbosity, include_path=None)
-    request_caching_args = request_caching_arg_to_dict(cache_requests=None)
 
     all_results = {}
     for task_name, task in config.tasks.items():
@@ -189,7 +187,6 @@ def evaluation_results(load_config: Dict) -> Tuple[ConfigParser, Dict]:
             numpy_random_seed=config.params.numpy_seed,
             torch_random_seed=config.params.torch_seed,
             fewshot_random_seed=config.params.fewshot_seed,
-            **request_caching_args,
         )
         results = update_results(results, evaluation_tracker)
         all_results[task_name] = results
