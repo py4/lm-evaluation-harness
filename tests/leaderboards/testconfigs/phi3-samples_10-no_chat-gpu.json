@@ -4,9 +4,9 @@
         "system_instruction": null,
         "chat_template": null,
         "model": "hf",
-        "model_args": "pretrained=microsoft/Phi-3-mini-4k-instruct,dtype=bfloat16",
+        "model_args": "pretrained=microsoft/Phi-3-mini-4k-instruct,revision=c1358f8a35e6d2af81890deffbbfa575b978c62f,dtype=bfloat16",
         "model_num_parameters": 3821079552,
-        "model_revision": "main",
+        "model_revision": "c1358f8a35e6d2af81890deffbbfa575b978c62f",
         "model_sha": "c1358f8a35e6d2af81890deffbbfa575b978c62f",
         "batch_size": 10,
         "max_batch_size": 10,
@@ -47,7 +47,7 @@
         },
         "leaderboard_bbh": {
             "limit": 1,
-            "num_fewshot": 0,
+            "num_fewshot": 3,
             "leaderboard_bbh_boolean_expressions": {
                 "task": "leaderboard_bbh_boolean_expressions",
                 "dataset_path": "SaylorTwift/bbh",
@@ -79,7 +79,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -123,7 +123,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -172,7 +172,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -217,7 +217,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -261,7 +261,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -314,7 +314,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -358,7 +358,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -405,7 +405,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -454,7 +454,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -499,7 +499,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -547,7 +547,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -591,7 +591,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -652,7 +652,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -699,7 +699,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -759,7 +759,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -807,7 +807,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -855,7 +855,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -899,7 +899,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -943,7 +943,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -989,7 +989,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -1036,7 +1036,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -1085,7 +1085,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -1130,7 +1130,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -1174,7 +1174,7 @@
                         }
                     ]
                 },
-                "num_fewshot": 0,
+                "num_fewshot": 3,
                 "metric_list": {
                     "metric": "acc_norm",
                     "aggregation": "mean",
@@ -1189,7 +1189,7 @@
             }
         },
         "leaderboard_gpqa": {
-            "limit": 1,
+            "limit": 5,
             "num_fewshot": 0,
             "leaderboard_gpqa_diamond": {
                 "task": "leaderboard_gpqa_diamond",
@@ -1436,7 +1436,7 @@
                 "acc_norm_stderr,none": "N/A"
             },
             "leaderboard_bbh_date_understanding": {
-                "acc_norm,none": 0.0,
+                "acc_norm,none": 1.0,
                 "acc_norm_stderr,none": "N/A"
             },
             "leaderboard_bbh_disambiguation_qa": {
@@ -1448,7 +1448,7 @@
                 "acc_norm_stderr,none": "N/A"
             },
             "leaderboard_bbh_geometric_shapes": {
-                "acc_norm,none": 0.0,
+                "acc_norm,none": 1.0,
                 "acc_norm_stderr,none": "N/A"
             },
             "leaderboard_bbh_hyperbaton": {
@@ -1472,7 +1472,7 @@
                 "acc_norm_stderr,none": "N/A"
             },
             "leaderboard_bbh_navigate": {
-                "acc_norm,none": 0.0,
+                "acc_norm,none": 1.0,
                 "acc_norm_stderr,none": "N/A"
             },
             "leaderboard_bbh_object_counting": {
@@ -1484,7 +1484,7 @@
                 "acc_norm_stderr,none": "N/A"
             },
             "leaderboard_bbh_reasoning_about_colored_objects": {
-                "acc_norm,none": 1.0,
+                "acc_norm,none": 0.0,
                 "acc_norm_stderr,none": "N/A"
             },
             "leaderboard_bbh_ruin_names": {
@@ -1527,15 +1527,15 @@
         "leaderboard_gpqa": {
             "leaderboard_gpqa_diamond": {
                 "acc_norm,none": 0.0,
-                "acc_norm_stderr,none": "N/A"
+                "acc_norm_stderr,none": 0.0
             },
             "leaderboard_gpqa_extended": {
-                "acc_norm,none": 0.0,
-                "acc_norm_stderr,none": "N/A"
+                "acc_norm,none": 0.2,
+                "acc_norm_stderr,none": 0.2
             },
             "leaderboard_gpqa_main": {
                 "acc_norm,none": 0.0,
-                "acc_norm_stderr,none": "N/A"
+                "acc_norm_stderr,none": 0.0
             }
         },
         "leaderboard_ifeval": {
@@ -1592,9 +1592,9 @@
             "leaderboard_bbh_web_of_lies": {"effective": 1, "original": 250}
         },
         "leaderboard_gpqa": {
-            "leaderboard_gpqa_diamond": {"effective": 1, "original": 198},
-            "leaderboard_gpqa_extended": {"effective": 1, "original": 546},
-            "leaderboard_gpqa_main": {"effective": 1, "original": 448}
+            "leaderboard_gpqa_diamond": {"effective": 5, "original": 198},
+            "leaderboard_gpqa_extended": {"effective": 5, "original": 546},
+            "leaderboard_gpqa_main": {"effective": 5, "original": 448}
         },
         "leaderboard_ifeval": {"effective": 10, "original": 541},
         "leaderboard_musr": {
@@ -1606,35 +1606,35 @@
     "task_hashes": {
         "leaderboard_mmlu_pro": "7f97cab7691eb6dbdbc6c1482bc5ea71c36c5697dea88e61e51d770ba022d771",
         "leaderboard_bbh": {
-            "leaderboard_bbh_boolean_expressions": "dbdbd02586549b2a4f5b04a29878945fae18042157af5b157fee7fca5fc59f0a",
-            "leaderboard_bbh_causal_judgement": "cde5b1ca5e5a3b6c59a6261afb668f9518204f66ac47a7706f9eb6f78f15ce46",
-            "leaderboard_bbh_date_understanding": "945e8e950680de4e94a0f563e750400f9e341bcd4cd49aa366ef82fd66bcbc74",
-            "leaderboard_bbh_disambiguation_qa": "56637d33403e0414d1179c30e468885b5ab272e8da510edba9df41768f77d841",
-            "leaderboard_bbh_formal_fallacies": "6cdf8e28de219160eed1aba12c1e65e35336316c62df778da66172dbb73ee6e5",
-            "leaderboard_bbh_geometric_shapes": "7c72155b9433185703179f9d05471c83787d4f77c037424c223a36ec679c01ea",
-            "leaderboard_bbh_hyperbaton": "018a43b125e58dc5605982ebb83e3b273658a43d45dc0f4e6bdc9a29d835e0f0",
-            "leaderboard_bbh_logical_deduction_five_objects": "231daa965296ff5d897ea6182a22732ce72a68ae9e066d461d073d8a7a72f8aa",
-            "leaderboard_bbh_logical_deduction_seven_objects": "cf4cfe74b7270d09c5e1f07d2ab1a067d192c7d0f8a6774b658fe471fb8b3b40",
-            "leaderboard_bbh_logical_deduction_three_objects": "5cb557fb1a41adb286f2059618cc951297b558a6b44aa5768a62c305d93c893d",
-            "leaderboard_bbh_movie_recommendation": "f5bbdae9b3485e1209426f3be30a30ce6e2a57482d3c2f286ebcc2a6c26170db",
-            "leaderboard_bbh_navigate": "eedd22ec3840f791330ef38e82e2af08e019110694f6a0206002a3297779708a",
-            "leaderboard_bbh_object_counting": "e7bc453dc7913e50f205c22bd43d862241f8643b88de097174d87d87240e7871",
-            "leaderboard_bbh_penguins_in_a_table": "9cf5d28fe85b19ab27c5093d121a5f5b272b0eee956e40cdee389c49889ca965",
-            "leaderboard_bbh_reasoning_about_colored_objects": "f8c8c8aa01a523350ea859586268a6ab88f43a8a53ec1208b11e3bf6e388a2ff",
-            "leaderboard_bbh_ruin_names": "4939df040c81f2746cb136ae062351fa1ad7b7ae2052f5a500df6c8f0c49bb5f",
-            "leaderboard_bbh_salient_translation_error_detection": "ac5080196ff66e4d766f70a28974170e45faf620cf29c7155d6ea9e269dcbb95",
-            "leaderboard_bbh_snarks": "700ccab5466b7a5fa018fb97fe7db44837604f4a989285011286803b46f9275e",
-            "leaderboard_bbh_sports_understanding": "b15825a768737d2cd9a3c020c7ec120a0fc48d2a14d8e6954fa24079335a2ee2",
-            "leaderboard_bbh_temporal_sequences": "3a61d307724de1ca1ebaf17d1fb4d397fde929ba2705d1e392fa91df58268692",
-            "leaderboard_bbh_tracking_shuffled_objects_five_objects": "16ffbe6c226248c850dbb902f4c79dc2397e2dca0edf526978df7d4f390cff5f",
-            "leaderboard_bbh_tracking_shuffled_objects_seven_objects": "7973f57d18607b342b016f16f9104796652108996054262ecc493c78e7e30d83",
-            "leaderboard_bbh_tracking_shuffled_objects_three_objects": "a10f81d5ddf6ad1ca5788abf17760811225fd404f59906c2c804077ec68a374a",
-            "leaderboard_bbh_web_of_lies": "c220c18fd67552d292012de79f51b0b48cce83e97b8d48b59f475cd0173d7a71"
+            "leaderboard_bbh_boolean_expressions": "e7ea038e206535d5f57e28ff44f9922e700f116bae0d3c6919b0181316db4f65",
+            "leaderboard_bbh_causal_judgement": "0c1997d3e6694bfc4b3c4efb879b54269b5dc0db1166e7447eb298412f417a33",
+            "leaderboard_bbh_date_understanding": "6d0b2f3d258deecc00c2ba95b2964556cb1c557ce36336fedfa481600d20294b",
+            "leaderboard_bbh_disambiguation_qa": "dae3e4031fd0f17735a8623ca632c3b6842877ff3a2aa4ef9bdb3fc6614c3773",
+            "leaderboard_bbh_formal_fallacies": "ebe412725cb5cb91691a32dabb1eab6585110a4fc270bcd8c1562970314b1f0e",
+            "leaderboard_bbh_geometric_shapes": "22dfe23575aba12b72105f506632db75e6d76a138f9fc1951f1ee9993c0d6509",
+            "leaderboard_bbh_hyperbaton": "1a232ab57529222245231a563eb32a95e32c47ea1061cafc3fdcee864ddebe9a",
+            "leaderboard_bbh_logical_deduction_five_objects": "1527c9104639d6eacef35564ad32fea91cb3135a8db334710267b79546ba3457",
+            "leaderboard_bbh_logical_deduction_seven_objects": "aaf7a5d38738f9f5f92c678239944dbbd0375e6092f54deff1d748fc56225033",
+            "leaderboard_bbh_logical_deduction_three_objects": "3d0b56b57c7d4192683cddc7d8e9e2c2688cda678e2891d5254029fc21fd693b",
+            "leaderboard_bbh_movie_recommendation": "f28bd3117a282d00b4581183842a50ccb6d73941b8eaf20a329b8d1695c698f1",
+            "leaderboard_bbh_navigate": "4ef8e09d6060847f928c574b01a0156064c980fcea9b295ec736519eaeef6531",
+            "leaderboard_bbh_object_counting": "87a34b2fe9d076e04f75c9db92a831054d8d2d7004e5a8f69f6333581d104b07",
+            "leaderboard_bbh_penguins_in_a_table": "7c3d731d4ee21b15386d7e28bc79f2026488a5515ebd88f3370a12fbab82d296",
+            "leaderboard_bbh_reasoning_about_colored_objects": "e777f9042b97dec9d46422726f055b4ec6ad2082ef2c0216797a1dc3c51b522d",
+            "leaderboard_bbh_ruin_names": "41723ce74394358bcdd096568412dac076f212072b3598fcdf942cffeb5e7e7e",
+            "leaderboard_bbh_salient_translation_error_detection": "f0eba62f528de9207fa49fa30e421ae1c4415e9485eee7ee1ceec9c2f122634c",
+            "leaderboard_bbh_snarks": "522b6ce11ae9b2ef7caa52e7fc1df16648e57f928c6a3b992eeaf0a2e67e126e",
+            "leaderboard_bbh_sports_understanding": "600cda890af7b7cb7fc662aa98d7edf8276ce0364d19f505bdd8838656266775",
+            "leaderboard_bbh_temporal_sequences": "92d75e0de675ffdf83dc9e4cd8c10a3b736d76ed9aefec597ea5657f2a002c3d",
+            "leaderboard_bbh_tracking_shuffled_objects_five_objects": "9b95abaa067edb0b64257042745bbda9d21d85fcf5928cc415acaff6f7e732e0",
+            "leaderboard_bbh_tracking_shuffled_objects_seven_objects": "7d1099d180cd7d4db89ce3fa5ad322c6f0c839a58468d97b28a18b3e4b1f3fa9",
+            "leaderboard_bbh_tracking_shuffled_objects_three_objects": "4718ab5618d620748818cba0e3ff32ec3af085e88bea200f25daa0739d242f72",
+            "leaderboard_bbh_web_of_lies": "25f9c8687fa959f9bec5d83710924c497e3fcc3a9a2c9769767c89cf1e6bc0e3"
         },
         "leaderboard_gpqa": {
-            "leaderboard_gpqa_diamond": "712e6d48eb8ef734cae32ac77163da1de61367f7a37cbb160592e5dd79629b14",
-            "leaderboard_gpqa_extended": "f21cf1ce376bafcf42a5850189636241ab89839910e2ee7b22a7a3b13d6afd3b",
-            "leaderboard_gpqa_main": "050a087c16e8a483a8916f1c982bf4197b542b41f9dbd88a37b58dd68ca936df"
+            "leaderboard_gpqa_diamond": "73a8b472feaf263e396ce6c370c29cc60e67e58fb36126bb47e030bf4165ca4f",
+            "leaderboard_gpqa_extended": "5646f0208b35f41c1ec9599229640da6b1ede15b82b80e5baab627f3641feec0",
+            "leaderboard_gpqa_main": "ee2ab52b1d397f198f0d37b7483626efd763aaba8010d3c36fb51e104ecfa6d3"
         },
         "leaderboard_ifeval": "b34a094f09c6009ef72f011b5749a9b774bb40192f1041f32e6cfff5ecd99e19",
         "leaderboard_musr": {
