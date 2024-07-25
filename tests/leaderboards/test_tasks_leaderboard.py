@@ -97,25 +97,22 @@ def compare_results(
                 compare_results(
                     reference_val, observed[key], config_name, key, recursive
                 )
-                continue
-            else:
-                continue
-
-        assert key in observed, (
-            f"Config: '{config_name} - {module_name}' failed. "
-            f"Key '{key}' is missing in the observed dictionary."
-        )
-        observed_val = observed[key]
-        if isinstance(reference_val, float):
-            assert reference_val == pytest.approx(observed_val, abs=1e-4), (
-                f"Config: '{config_name} - {module_name}' failed. {key}: "
-                f"Expected: {repr(reference_val)}, got: {repr(observed_val)}"
-            )
         else:
-            assert reference_val == observed_val, (
-                f"Config: '{config_name} - {module_name}' failed. {key}: "
-                f"Expected: {repr(reference_val)}, got: {repr(observed_val)}"
+            assert key in observed, (
+                f"Config: '{config_name} - {module_name}' failed. "
+                f"Key '{key}' is missing in the observed dictionary."
             )
+            observed_val = observed[key]
+            if isinstance(reference_val, float):
+                assert reference_val == pytest.approx(observed_val, abs=1e-4), (
+                    f"Config: '{config_name} - {module_name}' failed. {key}: "
+                    f"Expected: {repr(reference_val)}, got: {repr(observed_val)}"
+                )
+            else:
+                assert reference_val == observed_val, (
+                    f"Config: '{config_name} - {module_name}' failed. {key}: "
+                    f"Expected: {repr(reference_val)}, got: {repr(observed_val)}"
+                )
 
 
 @pytest.fixture(scope="module", params=load_all_configs(os.getenv("TESTS_DEVICE")))
