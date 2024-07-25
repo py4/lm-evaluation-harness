@@ -28,7 +28,7 @@
     "tasks": {
         "leaderboard_mmlu_pro": {
             "limit": 10,
-            "num_fewshot": 0,
+            "num_fewshot": 5,
             "dataset_path": "TIGER-Lab/MMLU-Pro",
             "description": "",
             "doc_to_choice": "def doc_to_choice(doc):\n    return [string.ascii_uppercase[i] for i in range(len(doc[\"options\"]))]\n",
@@ -1941,7 +1941,7 @@
         }
     },
     "task_hashes": {
-        "leaderboard_mmlu_pro": "7f97cab7691eb6dbdbc6c1482bc5ea71c36c5697dea88e61e51d770ba022d771",
+        "leaderboard_mmlu_pro": "35bd4276385bb7bb19faa4d3a1cd770743a9320d96c8d8974ea6c8975162c7b3",
         "leaderboard_bbh": {
             "leaderboard_bbh_boolean_expressions": "e7ea038e206535d5f57e28ff44f9922e700f116bae0d3c6919b0181316db4f65",
             "leaderboard_bbh_causal_judgement": "0c1997d3e6694bfc4b3c4efb879b54269b5dc0db1166e7447eb298412f417a33",
