@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any, Dict, Iterator, List
 
 
 def filter_dict(d: Dict[str, Any], key: str) -> Dict[str, Any]:
@@ -108,7 +108,7 @@ class ConfigParser:
             raise TypeError("Object is not a dictionary.")
 
 
-def load_all_configs(device: Optional[str] = None) -> List[Dict]:
+def load_all_configs(device: str = "cpu") -> List[Dict]:
     """
     Load all configuration files that include the specified device in their name.
 
@@ -116,15 +116,12 @@ def load_all_configs(device: Optional[str] = None) -> List[Dict]:
     It filters the files to include only those that match the given device (e.g., "cpu" or "gpu").
 
     Args:
-        device (Optional[str]): The device to filter the configuration files by.
-            Valid values are "cpu" or "gpu". If None, defaults to "cpu".
+        device (str): The device to filter the configuration files by.
+            Valid values are "cpu" or "gpu".
 
     Returns:
         List[Dict]: A list of dictionaries containing the configuration data from the files.
     """
-    if device is None:
-        device = "cpu"
-
     valid_devices = {"cpu", "gpu"}
     if device not in valid_devices:
         raise ValueError(f"Invalid device {device}. Must be one of {valid_devices}.")

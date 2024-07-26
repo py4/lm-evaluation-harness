@@ -12,6 +12,10 @@ from lm_eval.utils import hash_string
 from .utils import ConfigParser, filter_dict, load_all_configs
 
 
+# The device to use for evaluation
+TEST_DEVICE = os.getenv("TESTS_DEVICE", "cpu")
+
+
 def update_results(results: Dict, evaluation_tracker: EvaluationTracker) -> Dict:
     """
     Update the results dictionary with hashes and data from the evaluation tracker.
@@ -115,7 +119,7 @@ def compare_results(
                 )
 
 
-@pytest.fixture(scope="module", params=load_all_configs(os.getenv("TESTS_DEVICE")))
+@pytest.fixture(scope="module", params=load_all_configs(TEST_DEVICE))
 def load_config(request):
     """
     Pytest fixture that loads and yields evaluation configurations with expected results.
